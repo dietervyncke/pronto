@@ -1,8 +1,17 @@
-<h1>Offerte {{ ?=title }}</h1>
-<p>Klant: {{ ?=first_name }} {{ ?=last_name }}</p>
+<h1>Familie {{ ?=last_name }}</h1>
+
+<h2>Kinderen:</h2>
 
 <ul>
 	{{ repeat }}
-		<li>Whats up</li>
+		<li>
+			Nice {{ ?=last_name }}<br />
+			Kinderen van Nice {{ ?=last_name }}:
+			<ul>
+				{{ repeat }}
+					<li>Een itemke</li>
+				{{ /repeat }}
+			</ul>
+		</li>
 	{{ /repeat }}
 </ul>

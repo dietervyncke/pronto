@@ -22,6 +22,11 @@ class VariableNode extends Node
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
 
+			if( $parser->skip( Token::T_CLOSING_TAG ) )
+			{
+				$parser->restartParse();
+			}
+
 			return TRUE;
 		}
 
@@ -30,7 +35,9 @@ class VariableNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
+		$compiler->writeHead( '<?php if( ! isset($' . $this->name . ') ) : ?>' );
 		$compiler->writeHead( '<?php echo \'' . $this->name . ' \'; $' . $this->name . ' = \readline(); ?>' );
+		$compiler->writeHead( '<?php endif; ?>' );
 		$compiler->writeBody( '<?php $output .= $' . $this->name . '; ?>' );
 	}
 }

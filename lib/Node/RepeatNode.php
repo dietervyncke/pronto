@@ -10,13 +10,25 @@ class RepeatNode extends Node
 {
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_IDENT ) )
+		if( $parser->accept( Token::T_IDENT, 'repeat' ) )
 		{
 			$parser->insert( new static() );
-			$parser->advance();
 			$parser->traverseUp();
+			$parser->advance();
 
-			// @TODO
+			if( $parser->skip( Token::T_CLOSING_TAG ) )
+			{
+				$parser->restartParse();
+			}
+
+			if( $parser->skip( Token::T_IDENT, '/repeat' ) )
+			{
+				if( $parser->skip( Token::T_CLOSING_TAG ) )
+				{
+					$parser->traverseDown();
+					$parser->restartParse();
+				}
+			}
 
 			return TRUE;
 		}
@@ -26,6 +38,16 @@ class RepeatNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( 'Repeater found' );
+		$compiler->writeBody( '<?php echo \'== Entering repeat statement ==\' . "\n"; ?>' );
+		$compiler->writeBody( '<?php while( TRUE ) : ?>' );
+
+		foreach( $this->getChildren() as $child )
+		{
+			$child->compile( $compiler );
+		}
+
+		$compiler->writeBody( '<?php echo \'Repeat again? \'; $breakRepeat = \readline(); ?>' );
+		$compiler->writeBody( '<?php if( $breakRepeat !== \'y\' ) break; ?>' );
+		$compiler->writeBody( '<?php endwhile; ?>' );
 	}
 }

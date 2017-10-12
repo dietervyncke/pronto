@@ -29,38 +29,41 @@ class Parser
 			return;
 		}
 
+		TextNode::parse( $this );
+
 		if( $this->skip( Token::T_OPENING_TAG ) )
 		{
 			VariableNode::parse( $this );
 			RepeatNode::parse( $this );
-
-			if( $this->skip( Token::T_CLOSING_TAG ) )
-			{
-				$this->parse( $this->currentTokenIndex );
-			}
-		}
-		else
-		{
-			TextNode::parse( $this );
-			$this->parse( $this->currentTokenIndex );
 		}
 
 		return $this->rootNode;
 	}
 
+	public function restartParse()
+	{
+		$this->parse( $this->currentTokenIndex );
+	}
+
 	public function advance()
 	{
-		$this->currentTokenIndex++;
+		if( $this->currentTokenIndex < count( $this->tokenStream->getTokens() ) - 1 )
+		{
+			$this->currentTokenIndex++;
+		}
 	}
 
-	public function accept( $tokenType )
+	public function accept( $tokenType, $value = NULL )
 	{
-		return $this->getCurrentToken()->getType() === $tokenType;
+		return (
+			$this->getCurrentToken()->getType() === $tokenType &&
+			( $value ? $this->getCurrentToken()->getValue() === $value : TRUE )
+		);
 	}
 
-	public function skip( $tokenType )
+	public function skip( $tokenType, $value = NULL )
 	{
-		if( $this->tokenStream->getToken( $this->currentTokenIndex )->getType() === $tokenType )
+		if( $this->accept( $tokenType, $value ) )
 		{
 			$this->advance();
 			return TRUE;
@@ -77,6 +80,11 @@ class Parser
 	public function traverseUp()
 	{
 		$this->setScopeNode( $this->getScopeNode()->getLastChild() );
+	}
+
+	public function traverseDown()
+	{
+		$this->setScopeNode( $this->getScopeNode()->getParent() );
 	}
 
 	public function getCurrentToken()
