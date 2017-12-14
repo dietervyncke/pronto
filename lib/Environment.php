@@ -2,8 +2,14 @@
 
 namespace lib;
 
+use League\CLImate\CLImate;
+
 class Environment
 {
+	const COLOR_RED = 'red';
+	const COLOR_GREEN = 'green';
+	const COLOR_DARK_GRAY = 'darkGray';
+
 	private $output = '';
 
 	private $globalVariables = [];
@@ -11,41 +17,48 @@ class Environment
 
 	private $indent = 0;
 
-	public function getGlobalVariable( $name )
+	public function setGlobalVariable( $name, $values = NULL )
 	{
-		if( ! isset( $this->globalVariables[ $name ] ) )
+		if( ! self::getGlobalVariable( $name ) )
 		{
-			$this->writeLine($name, 1);
-			$this->globalVariables[$name] = \readline();
+			if( $values )
+			{
+				$this->globalVariables[ $name ] = $this->getOptions( $values, $name );
+			}
+			else
+			{
+				$this->globalVariables[ $name ] = $this->readInput( $name );
+			}
 		}
 	}
 
-	public function printGlobalVariable( $name )
+	public function getGlobalVariable( $name )
 	{
 		if( isset( $this->globalVariables[ $name ] ) )
 		{
-//			$this->output .= $this->globalVariables[ $name ];
 			return $this->globalVariables[ $name ];
 		}
 
 		return NULL;
 	}
 
-	public function getLocalVariable( $name )
-	{
-		$this->writeLine( $name, 1 );
-		$this->localVariables[ $name ] = \readline();
-	}
-
-	public function printLocalVariable( $name )
+	public function getLocalVariable( $name, $values = NULL )
 	{
 		if( isset( $this->localVariables[ $name ] ) )
 		{
-			$this->output .= $this->localVariables[ $name ];
 			return $this->localVariables[ $name ];
 		}
 
-		return NULL;
+		if( $values )
+		{
+			$this->localVariables[ $name ] = $this->getOptions( $values, $name );
+		}
+		else
+		{
+			$this->localVariables[ $name ] = $this->readInput( $name );
+		}
+
+		return $this->localVariables[ $name ];
 	}
 
 	public function clearLocalVariables()
@@ -53,26 +66,27 @@ class Environment
 		$this->localVariables = [];
 	}
 
-	public function repeat( $closure )
+	public function repeat( $closure, $title = 'Repeat again?' )
 	{
+		$climate = new CLImate();
+
 		$this->indent++;
 
-		$this->writeLine( 'Entering repeat statement', 4 );
+		$this->writeLine( 'Entering repeat statement', self::COLOR_DARK_GRAY );
 
 		while( TRUE )
 		{
 			$this->clearLocalVariables();
 
-			call_user_func( $closure );
+			$input = $climate->confirm( $title );
 
-			$this->writeLine( 'Repeat again?', 4 );
-			$breakRepeat = \readline();
-
-			if( $breakRepeat !== 'y' )
+			if( !$input->confirmed() )
 			{
-				$this->writeLine( 'Exiting repeat', 4 );
+				$this->writeLine( 'Exiting repeat', self::COLOR_DARK_GRAY );
 				break;
 			}
+
+			call_user_func( $closure );
 		}
 
 		$this->indent--;
@@ -88,15 +102,46 @@ class Environment
 		return $this->output;
 	}
 
+	private function getOptions( $values, $title = 'Select an option' )
+	{
+		while( TRUE )
+		{
+			$input = $this->printRadioButtonList( $title, $values );
+			$response = $input->prompt();
+
+			if( $response )
+			{
+				return $response;
+			}
+		}
+
+		return NULL;
+
+	}
+
 	// CLI helpers
 
-	private function writeLine( $string, $colorCode )
+	private function writeLine( $string, $color )
 	{
-		echo $this->getIndentString() . chr( 27 ) . "[" . "$colorCode" . "m" . $string . chr( 27 ) . "[0m" . "\n";
+		$climate = new CLImate();
+		$climate->$color()->bold( $this->getIndentString() . $string );
 	}
 
 	private function getIndentString()
 	{
 		return str_repeat('>>>', $this->indent ) . ( $this->indent ? ' ' : NULL );
+	}
+
+	private function printRadioButtonList( $title, $values, $color = Environment::COLOR_GREEN )
+	{
+		$climate = new CLImate();
+		return $climate->$color()->radio( $title, $values );
+	}
+
+	private function readInput( $title, $color = Environment::COLOR_GREEN )
+	{
+		$climate = new CLImate();
+		$input = $climate->$color()->input( $title );
+		return $input->prompt();
 	}
 }

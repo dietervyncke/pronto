@@ -6,18 +6,18 @@ use lib\Compiler;
 use lib\Parser;
 use lib\Token;
 
-class TextNode extends Node
+class NumberNode extends Node
 {
-	private $text;
+	private $value;
 
-	public function __construct( $text )
+	public function __construct( $value )
 	{
-		$this->text = $text;
+		$this->value = $value;
 	}
 
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_TEXT ) )
+		if( $parser->accept( Token::T_NUMBER ) )
 		{
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
@@ -30,6 +30,6 @@ class TextNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->write(\'' . $this->text . '\'); ?>' );
+		$compiler->writeBody( '\'' . $this->value . '\'' );
 	}
 }

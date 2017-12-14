@@ -16,7 +16,7 @@ class PrintNode extends Node
 			$parser->traverseDown();
 		}
 
-		if ( $parser->skip(Token::T_CLOSING_TAG ) ) {
+		if ( $parser->skip( Token::T_CLOSING_TAG ) ) {
 			$parser->restartParse();
 		}
 	}

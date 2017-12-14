@@ -48,6 +48,8 @@ class IfNode extends Node
 
 		$compiler->writeBody( ' ): ?>' );
 
+//		$compiler->writeBody( '$env->clearLocalVariables(); ' );
+
 		foreach( $this->getChildren() as $child )
 		{
 			$child->compile( $compiler );

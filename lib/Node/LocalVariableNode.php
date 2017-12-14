@@ -22,6 +22,20 @@ class LocalVariableNode extends Node
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
 
+			if( $parser->skip( Token::T_SYMBOL, '(' ) )
+			{
+				$parser->traverseUp();
+
+				if( ParameterNode::parse( $parser ) )
+				{
+					$parser->setAttribute();
+				}
+
+				$parser->traverseDown();
+			}
+
+			$parser->skip( Token::T_SYMBOL, ')' );
+
 			return TRUE;
 		}
 
@@ -30,7 +44,21 @@ class LocalVariableNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->getLocalVariable( \'' . $this->name . '\' ); ?>' );
-		$compiler->writeBody( '$env->printLocalVariable( \'' . $this->name . '\' )' );
+		$compiler->writeBody( '$env->getLocalVariable( \'' . $this->name . '\'' );
+
+		if( count( $this->getAttributes() ) )
+		{
+			$compiler->writeBody( ', ' );
+		}
+
+		foreach ( $this->getAttributes() as $a )
+		{
+			$subcompiler = new Compiler();
+			$compiler->writeBody( $subcompiler->compile( $a ) );
+		}
+
+		$compiler->writeBody( ' )' );
+
+//		$compiler->writeBody( '$env->getLocalVariable( \'' . $this->name . '\' ) ' );
 	}
 }

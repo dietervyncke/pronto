@@ -22,6 +22,20 @@ class GlobalVariableNode extends Node
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
 
+			if( $parser->skip( Token::T_SYMBOL, '(' ) )
+			{
+				$parser->traverseUp();
+
+				if( ParameterNode::parse( $parser ) )
+				{
+					$parser->setAttribute();
+				}
+
+				$parser->traverseDown();
+			}
+
+			$parser->skip( Token::T_SYMBOL, ')' );
+
 			return TRUE;
 		}
 
@@ -30,7 +44,21 @@ class GlobalVariableNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeHead( '<?php $env->getGlobalVariable( \'' . $this->name . '\' ); ?>' );
-		$compiler->writeBody( '$env->printGlobalVariable( \'' . $this->name . '\' )' );
+		$compiler->writeHead( '<?php $env->setGlobalVariable( \'' . $this->name . '\'' );
+
+		if( count( $this->getAttributes() ) )
+		{
+			$compiler->writeHead( ', ' );
+		}
+
+		foreach ( $this->getAttributes() as $a )
+		{
+			$subcompiler = new Compiler();
+			$compiler->writeHead( $subcompiler->compile( $a ) );
+		}
+
+		$compiler->writeHead( ' ); ?>' );
+
+		$compiler->writeBody( '$env->getGlobalVariable( \'' . $this->name . '\' )' );
 	}
 }
