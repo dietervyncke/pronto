@@ -6,18 +6,18 @@ use lib\Compiler;
 use lib\Parser;
 use lib\Token;
 
-class TextNode extends Node
+class LocalVariableNode extends Node
 {
-	private $text;
+	private $name;
 
-	public function __construct( $text )
+	public function __construct( $name )
 	{
-		$this->text = $text;
+		$this->name = $name;
 	}
 
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_TEXT ) )
+		if( $parser->accept( Token::T_LOCAL_VAR ) )
 		{
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
@@ -30,6 +30,7 @@ class TextNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->write(\'' . $this->text . '\'); ?>' );
+		$compiler->writeBody( '<?php $env->getLocalVariable( \'' . $this->name . '\' ); ?>' );
+		$compiler->writeBody( '$env->printLocalVariable( \'' . $this->name . '\' )' );
 	}
 }

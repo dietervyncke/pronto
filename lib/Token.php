@@ -12,18 +12,27 @@ class Token
 	const REGEX_T_CLOSING_TAG = '\}';
 	const REGEX_T_IDENT = '[a-zA-Z\-\_\/]';
 	const REGEX_T_ASSIGN = '[=]';
+	const REGEX_T_SYMBOL = '[\(\)\,]';
+	const REGEX_T_NUMBER = '[0-9.]';
 
 	const REGEX_T_STRING_DELIMITER = '[\"\']'; // " '
 
 	const REGEX_T_VAR = '^[a-zA-Z._-]+';
 	const REGEX_T_VAR_START = '\?';
+	const REGEX_T_GLOBAL_VAR = '\=';
+	const REGEX_T_LOCAL_VAR = '\-';
 
 	const T_TEXT = 'T_TEXT';
 	const T_OPENING_TAG = 'T_OPENING_TAG';
 	const T_CLOSING_TAG = 'T_CLOSING_TAG';
 	const T_STRING = 'T_STRING';
 	const T_IDENT = 'T_IDENT';
-	const T_VAR = 'T_VAR';
+	const T_GLOBAL_VAR = 'T_GLOBAL_VAR';
+	const T_LOCAL_VAR = 'T_LOCAL_VAR';
+	const T_PARAM_OPENING_TAG = 'T_PARAM_OPENING_TAG';
+	const T_PARAM_CLOSING_TAG = 'T_PARAM_CLOSING_TAG';
+	const T_NUMBER = 'T_NUMBER';
+	const T_SYMBOL = 'T_SYMBOL';
 
 	private static $tokentypes = [
 		self::T_TEXT => 'T_TEXT',
@@ -31,7 +40,8 @@ class Token
 		self::T_CLOSING_TAG => 'T_CLOSING_TAG',
 		self::T_STRING => 'T_STRING',
 		self::T_IDENT => 'T_IDENT',
-		self::T_VAR => 'T_VAR',
+		self::T_GLOBAL_VAR => 'T_GLOBAL_VAR',
+		self::T_LOCAL_VAR => 'T_LOCAL_VAR',
 	];
 
 	public function __construct( $type, $value )
@@ -62,6 +72,6 @@ class Token
 
 	public function __toString()
 	{
-		return $this->getType() . $this->getValue() . "\n";
+		return $this->getType() . '(' . $this->getValue() . ')' . "\n";
 	}
 }

@@ -2,11 +2,13 @@
 
 namespace lib;
 
+use lib\Node\IfNode;
 use lib\Node\Node;
+use lib\Node\NumberNode;
+use lib\Node\PrintNode;
 use lib\Node\RepeatNode;
 use lib\Node\RootNode;
 use lib\Node\TextNode;
-use lib\Node\VariableNode;
 
 class Parser
 {
@@ -30,11 +32,13 @@ class Parser
 		}
 
 		TextNode::parse( $this );
+		NumberNode::parse( $this );
 
 		if( $this->skip( Token::T_OPENING_TAG ) )
 		{
-			VariableNode::parse( $this );
 			RepeatNode::parse( $this );
+			IfNode::parse( $this );
+			PrintNode::parse( $this );
 		}
 
 		return $this->rootNode;
@@ -72,9 +76,15 @@ class Parser
 		return FALSE;
 	}
 
-	public function insert( Node $node )
+	public function wrap( Node $node )
 	{
-		$this->getScopeNode()->addChild( $node );
+		$last = $this->getScopeNode()->getLastChild();
+		$this->getScopeNode()->removeLastChild();
+
+		$this->insert( $node );
+		$this->traverseUp();
+
+		$this->insert( $last );
 	}
 
 	public function traverseUp()
@@ -100,5 +110,17 @@ class Parser
 	public function getScopeNode()
 	{
 		return $this->scopeNode;
+	}
+
+	public function setAttribute()
+	{
+		$last = $this->getScopeNode()->getLastChild();
+		$this->getScopeNode()->removeLastChild();
+		$this->getScopeNode()->setAttribute( $last );
+	}
+
+	public function insert( Node $node )
+	{
+		$this->getScopeNode()->addChild( $node );
 	}
 }

@@ -8,13 +8,14 @@ class RootNode extends Node
 {
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeHead('<?php $output = \'\'; ?>' );
+		$compiler->writeHead( '<?php require_once \'lib/Environment.php\'; ?>' );
+		$compiler->writeHead( '<?php $env = new \lib\Environment(); ?>' );
 
 		foreach( $this->getChildren() as $node )
 		{
 			$node->compile( $compiler );
 		}
 
-		$compiler->writeBody( '<?php return $output; ?>' );
+		$compiler->writeBody( '<?php return $env->getOutput(); ?>' );
 	}
 }

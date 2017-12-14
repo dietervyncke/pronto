@@ -38,16 +38,13 @@ class RepeatNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php echo \'== Entering repeat statement ==\' . "\n"; ?>' );
-		$compiler->writeBody( '<?php while( TRUE ) : ?>' );
+		$compiler->writeBody( '<?php $env->repeat(function() use ( &$env ) { ?>' );
 
 		foreach( $this->getChildren() as $child )
 		{
 			$child->compile( $compiler );
 		}
 
-		$compiler->writeBody( '<?php echo \'Repeat again? \'; $breakRepeat = \readline(); ?>' );
-		$compiler->writeBody( '<?php if( $breakRepeat !== \'y\' ) break; ?>' );
-		$compiler->writeBody( '<?php endwhile; ?>' );
+		$compiler->writeBody( '<?php }); ?>' );
 	}
 }

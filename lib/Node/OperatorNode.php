@@ -6,18 +6,11 @@ use lib\Compiler;
 use lib\Parser;
 use lib\Token;
 
-class TextNode extends Node
+class OperatorNode extends Node
 {
-	private $text;
-
-	public function __construct( $text )
-	{
-		$this->text = $text;
-	}
-
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_TEXT ) )
+		if( $parser->accept( Token::T_IDENT, 'equals' ) )
 		{
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
@@ -30,6 +23,6 @@ class TextNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->write(\'' . $this->text . '\'); ?>' );
+		$compiler->writeBody( ' === ' );
 	}
 }
