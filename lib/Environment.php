@@ -103,7 +103,6 @@ class Environment
 			}
 
 			call_user_func( $closure );
-
 		}
 
 		$this->indent--;
@@ -128,16 +127,6 @@ class Environment
 		}
 	}
 
-	public function write( $text )
-	{
-		$this->output .= $text;
-	}
-
-	public function getOutput()
-	{
-		return $this->output;
-	}
-
 	private function getOptions( $values, $title = 'Select an option' )
 	{
 		while( TRUE )
@@ -152,7 +141,16 @@ class Environment
 		}
 
 		return NULL;
+	}
 
+	public function write( $text )
+	{
+		$this->output .= $text;
+	}
+
+	public function getOutput()
+	{
+		return $this->output;
 	}
 
 	// CLI helpers

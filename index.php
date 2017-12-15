@@ -40,6 +40,7 @@ $ast = $parser->parse();
 
 $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
+$output .= '<?php return $env->getOutput(); ?>';
 
 file_put_contents( 'output.php', $output );
 file_put_contents( 'examples/compiled/my-new-offer.md', require 'output.php' );

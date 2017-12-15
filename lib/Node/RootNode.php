@@ -15,7 +15,5 @@ class RootNode extends Node
 		{
 			$node->compile( $compiler );
 		}
-
-		$compiler->writeBody( '<?php return $env->getOutput(); ?>' );
 	}
 }
