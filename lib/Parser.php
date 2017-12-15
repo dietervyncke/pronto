@@ -2,7 +2,9 @@
 
 namespace lib;
 
+use lib\Node\AssignmentNode;
 use lib\Node\IfNode;
+use lib\Node\IncludeNode;
 use lib\Node\Node;
 use lib\Node\NumberNode;
 use lib\Node\PrintNode;
@@ -36,7 +38,9 @@ class Parser
 
 		if( $this->skip( Token::T_OPENING_TAG ) )
 		{
+			AssignmentNode::parse( $this );
 			RepeatNode::parse( $this );
+			IncludeNode::parse( $this );
 			IfNode::parse( $this );
 			PrintNode::parse( $this );
 		}

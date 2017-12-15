@@ -154,6 +154,10 @@ class Lexer
 
 			return;
 		}
+		elseif( preg_match( '@' . Token::REGEX_T_OP . '@', $this->currentChar ) )
+		{
+			$this->stream->addToken( new Token( Token::T_OP, $this->currentChar ) );
+		}
 		elseif( preg_match( '@' . Token::REGEX_T_SYMBOL . '@', $this->currentChar ) )
 		{
 			$this->stream->addToken( new Token( Token::T_SYMBOL, $this->currentChar ) );
@@ -214,7 +218,6 @@ class Lexer
 		$this->currentValue .= $this->currentChar;
 		$this->advanceCursor();
 	}
-
 
 	private function lexString()
 	{

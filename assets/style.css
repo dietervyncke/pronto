@@ -1,0 +1,79 @@
+html,
+body
+{
+    font-size: 105%;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    color: #2a2a2a;
+}
+
+#wrapper
+{
+    padding-top: 2rem;
+}
+
+.wrap
+{
+    width: 75%;
+    margin: 0 auto;
+}
+
+.project-title
+{
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+}
+
+.module
+{
+    margin-bottom: 4rem;
+}
+
+.module > .title
+{
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.module > .description
+{
+    margin-bottom: 2rem;
+}
+
+.module > .timing
+{
+    font-weight: 400;
+    font-size: 1.2rem;
+}
+
+.fields
+{
+    padding-left: 4rem;
+}
+
+.fields .field
+{
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    list-style-type: disc;
+}
+
+.field .title
+{
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.field .description
+{
+    line-height: 1;
+}
+
+.field .required
+{
+    font-size: .95rem;
+    font-weight: 400;
+}

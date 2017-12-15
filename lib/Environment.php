@@ -17,29 +17,45 @@ class Environment
 
 	private $indent = 0;
 
-	public function setGlobalVariable( $name, $values = NULL )
+	public static $instance;
+
+	public function __construct()
 	{
-		if( ! self::getGlobalVariable( $name ) )
-		{
-			if( $values )
-			{
-				$this->globalVariables[ $name ] = $this->getOptions( $values, $name );
-			}
-			else
-			{
-				$this->globalVariables[ $name ] = $this->readInput( $name );
-			}
-		}
+		self::$instance = $this;
 	}
 
-	public function getGlobalVariable( $name )
+	public static function get()
+	{
+		if( self::$instance === null )
+		{
+			return self::$instance = new static();
+		}
+
+		return self::$instance;
+	}
+
+	public function setGlobalVariable( $name, $value )
+	{
+		$this->globalVariables[ $name ] = $value;
+	}
+
+	public function getGlobalVariable( $name, $values = NULL )
 	{
 		if( isset( $this->globalVariables[ $name ] ) )
 		{
 			return $this->globalVariables[ $name ];
 		}
 
-		return NULL;
+		if( $values )
+		{
+			$this->globalVariables[ $name ] = $this->getOptions( $values, $name );
+		}
+		else
+		{
+			$this->globalVariables[ $name ] = $this->readInput( $name );
+		}
+
+		return $this->globalVariables[ $name ];
 	}
 
 	public function getLocalVariable( $name, $values = NULL )
@@ -87,9 +103,29 @@ class Environment
 			}
 
 			call_user_func( $closure );
+
 		}
 
 		$this->indent--;
+	}
+
+	public function includeTemplate( $filename )
+	{
+		$filename =  dirname( __DIR__ ) . $filename;
+
+		if( file_exists( $filename ) )
+		{
+			$lexer = new \lib\Lexer();
+			$tokens = $lexer->tokenize( file_get_contents( $filename ) );
+
+			$parser = new \lib\Parser( $tokens );
+			$ast = $parser->parse();
+
+			$compiler = new \lib\Compiler();
+
+			file_put_contents( 'temp.php', $compiler->compile( $ast ) );
+			$this->output .= require 'temp.php';
+		}
 	}
 
 	public function write( $text )
@@ -129,7 +165,7 @@ class Environment
 
 	private function getIndentString()
 	{
-		return str_repeat('>>>', $this->indent ) . ( $this->indent ? ' ' : NULL );
+		return str_repeat( '>>>', $this->indent ) . ( $this->indent ? ' ' : NULL );
 	}
 
 	private function printRadioButtonList( $title, $values, $color = Environment::COLOR_GREEN )
@@ -141,7 +177,7 @@ class Environment
 	private function readInput( $title, $color = Environment::COLOR_GREEN )
 	{
 		$climate = new CLImate();
-		$input = $climate->$color()->input( $title );
+		$input = $climate->$color()->input( $this->getIndentString() . $title );
 		return $input->prompt();
 	}
 }

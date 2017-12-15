@@ -9,11 +9,19 @@ class ConditionNode extends Node
 {
 	public static function parse( Parser $parser )
 	{
-		if( ExpressionNode::parse( $parser ) || OperatorNode::parse( $parser ) )
+		if( ExpressionNode::parse( $parser ) || LogicalOperatorNode::parse( $parser ) )
 		{
 			if( !$parser->getScopeNode() instanceof self )
 			{
 				$parser->wrap( new static() );
+			}
+
+			if( ExpressionNode::parse( $parser ) || LogicalOperatorNode::parse( $parser ) )
+			{
+				self::parse( $parser );
+			}
+			else
+			{
 				$parser->traverseDown();
 			}
 

@@ -42,23 +42,26 @@ class GlobalVariableNode extends Node
 		return FALSE;
 	}
 
+	public function getName()
+	{
+		return $this->name;
+	}
+
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeHead( '<?php $env->setGlobalVariable( \'' . $this->name . '\'' );
+		$compiler->writeBody( '$env->getGlobalVariable( \'' . $this->name . '\'' );
 
 		if( count( $this->getAttributes() ) )
 		{
-			$compiler->writeHead( ', ' );
+			$compiler->writeBody( ', ' );
 		}
 
 		foreach ( $this->getAttributes() as $a )
 		{
 			$subcompiler = new Compiler();
-			$compiler->writeHead( $subcompiler->compile( $a ) );
+			$compiler->writeBody( $subcompiler->compile( $a ) );
 		}
 
-		$compiler->writeHead( ' ); ?>' );
-
-		$compiler->writeBody( '$env->getGlobalVariable( \'' . $this->name . '\' )' );
+		$compiler->writeBody( ' )' );
 	}
 }

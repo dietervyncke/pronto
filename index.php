@@ -20,12 +20,16 @@ require_once 'lib/Node/ConditionNode.php';
 require_once 'lib/Node/ExpressionNode.php';
 require_once 'lib/Node/PrintNode.php';
 require_once 'lib/Node/StringNode.php';
+require_once 'lib/Node/LogicalOperatorNode.php';
 require_once 'lib/Node/OperatorNode.php';
 require_once 'lib/Node/NumberNode.php';
 require_once 'lib/Node/ParameterNode.php';
+require_once 'lib/Node/IncludeNode.php';
+require_once 'lib/Node/AssignmentNode.php';
 
 $lexer = new \lib\Lexer();
-$tokens = $lexer->tokenize( file_get_contents( 'templates/offer-test-01.tpl' ) );
+$tokens = $lexer->tokenize( file_get_contents( 'examples/md-offer.md' ) );
+//$tokens = $lexer->tokenize( file_get_contents( 'examples/assign.tpl' ) );
 
 //util\printTokens( $tokens );
 
@@ -38,4 +42,4 @@ $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
 
 file_put_contents( 'output.php', $output );
-file_put_contents( 'mijn-offerte.html', require 'output.php' );
+file_put_contents( 'examples/compiled/my-new-offer.md', require 'output.php' );

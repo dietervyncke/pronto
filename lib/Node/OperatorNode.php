@@ -8,9 +8,16 @@ use lib\Token;
 
 class OperatorNode extends Node
 {
+	private $sign;
+
+	public function __construct( $sign )
+	{
+		$this->sign = $sign;
+	}
+
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_IDENT, 'equals' ) )
+		if( $parser->accept( Token::T_OP ) )
 		{
 			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
 			$parser->advance();
@@ -23,6 +30,17 @@ class OperatorNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( ' === ' );
+		if( $this->sign === '-' )
+		{
+			$compiler->writeBody( ' - ' );
+		}
+		elseif( $this->sign === '*' )
+		{
+			$compiler->writeBody( ' * ' );
+		}
+		else
+		{
+			$compiler->writeBody( ' + ' );
+		}
 	}
 }

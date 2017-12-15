@@ -30,6 +30,6 @@ class TextNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->write(\'' . $this->text . '\'); ?>' );
+		$compiler->writeBody( '<?php $env->write(\'' . str_replace( '\'', '\\\'', $this->text ) . '\'); ?>' );
 	}
 }

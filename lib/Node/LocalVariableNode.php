@@ -42,6 +42,11 @@ class LocalVariableNode extends Node
 		return FALSE;
 	}
 
+	public function getName()
+	{
+		return $this->name;
+	}
+
 	public function compile( Compiler $compiler )
 	{
 		$compiler->writeBody( '$env->getLocalVariable( \'' . $this->name . '\'' );
@@ -58,7 +63,5 @@ class LocalVariableNode extends Node
 		}
 
 		$compiler->writeBody( ' )' );
-
-//		$compiler->writeBody( '$env->getLocalVariable( \'' . $this->name . '\' ) ' );
 	}
 }
