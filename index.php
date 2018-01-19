@@ -28,8 +28,8 @@ require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 
 $lexer = new \lib\Lexer();
-$tokens = $lexer->tokenize( file_get_contents( 'examples/md-offer.md' ) );
-//$tokens = $lexer->tokenize( file_get_contents( 'examples/assign.tpl' ) );
+//$tokens = $lexer->tokenize( file_get_contents( 'examples/md-offer.md' ) );
+$tokens = $lexer->tokenize( file_get_contents( 'examples/assign.tpl' ) );
 
 //util\printTokens( $tokens );
 

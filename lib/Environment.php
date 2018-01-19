@@ -26,7 +26,7 @@ class Environment
 
 	public static function get()
 	{
-		if( self::$instance === null )
+		if( !self::$instance )
 		{
 			return self::$instance = new static();
 		}
