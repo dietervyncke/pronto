@@ -13,6 +13,10 @@ require_once 'lib/TokenStream.php';
 require_once 'lib/Token.php';
 require_once 'lib/Parser.php';
 require_once 'lib/Compiler.php';
+require_once 'lib/Environment.php';
+require_once 'lib/Runtime.php';
+
+require_once 'lib/Helper/File.php';
 
 require_once 'lib/Node/Node.php';
 require_once 'lib/Node/RootNode.php';
@@ -43,6 +47,7 @@ $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
 $output .= '<?php return $env->getOutput(); ?>';
 
+/*
 if( ! file_exists( '../../cache' ) )
 {
 	mkdir( '../../cache', 0777 );
@@ -51,3 +56,4 @@ if( ! file_exists( '../../cache' ) )
 file_put_contents( '../../cache/compiled.php', $output );
 file_put_contents( $outputPath, require '../../cache/compiled.php' );
 unlink( '../../cache/compiled.php' );
+*/
