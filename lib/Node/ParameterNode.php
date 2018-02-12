@@ -39,11 +39,7 @@ class ParameterNode extends Node
 		foreach( $this->getChildren() as $child )
 		{
 			$child->compile( $compiler );
-
-			if( ! ( end( $this->getChildren() ) === $child ) )
-			{
-				$compiler->writeBody( ',' );
-			}
+			$compiler->writeBody( ',' );
 		}
 
 		$compiler->writeBody( ']' );
