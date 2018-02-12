@@ -1,5 +1,10 @@
 <?php
 
+$opts = getopt('i:o:', [], $lastIndex );
+
+$inputPath = $opts[ 'i' ];
+$outputPath = $opts[ 'o' ];
+
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
 
@@ -28,19 +33,21 @@ require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 
 $lexer = new \lib\Lexer();
-//$tokens = $lexer->tokenize( file_get_contents( 'examples/md-offer.md' ) );
-$tokens = $lexer->tokenize( file_get_contents( 'examples/assign.tpl' ) );
-
-//util\printTokens( $tokens );
+$tokens = $lexer->tokenize( file_get_contents( $inputPath ) );
 
 $parser = new \lib\Parser( $tokens );
 $ast = $parser->parse();
 
-//util\printChildren($ast);
-
 $compiler = new \lib\Compiler();
+
 $output = $compiler->compile( $ast );
 $output .= '<?php return $env->getOutput(); ?>';
 
-file_put_contents( 'output.php', $output );
-file_put_contents( 'examples/compiled/my-new-offer.md', require 'output.php' );
+if( ! file_exists( '../../cache' ) )
+{
+	mkdir( '../../cache', 0777 );
+}
+
+file_put_contents( '../../cache/compiled.php', $output );
+file_put_contents( $outputPath, require '../../cache/compiled.php' );
+unlink( '../../cache/compiled.php' );
