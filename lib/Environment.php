@@ -17,23 +17,6 @@ class Environment
 
 	private $indent = 0;
 
-	public static $instance;
-
-	public function __construct()
-	{
-		self::$instance = $this;
-	}
-
-	public static function get()
-	{
-		if( !self::$instance )
-		{
-			return self::$instance = new static();
-		}
-
-		return self::$instance;
-	}
-
 	public function setGlobalVariable( $name, $value )
 	{
 		$this->globalVariables[ $name ] = $value;
@@ -46,14 +29,7 @@ class Environment
 			return $this->globalVariables[ $name ];
 		}
 
-		if( $values )
-		{
-			$this->globalVariables[ $name ] = $this->getOptions( $values, $name );
-		}
-		else
-		{
-			$this->globalVariables[ $name ] = $this->readInput( $name );
-		}
+		$this->globalVariables[ $name ] = ( $values ? $this->getOptions( $values, $name ) : $this->readInput( $name ) );
 
 		return $this->globalVariables[ $name ];
 	}
@@ -65,14 +41,7 @@ class Environment
 			return $this->localVariables[ $name ];
 		}
 
-		if( $values )
-		{
-			$this->localVariables[ $name ] = $this->getOptions( $values, $name );
-		}
-		else
-		{
-			$this->localVariables[ $name ] = $this->readInput( $name );
-		}
+		$this->localVariables[ $name ] = ( $values ? $this->getOptions( $values, $name ) : $this->readInput( $name ) );
 
 		return $this->localVariables[ $name ];
 	}

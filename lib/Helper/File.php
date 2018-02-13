@@ -9,6 +9,6 @@ namespace lib\Helpers\File;
  */
 function scopedRequire( $filename, $vars = [] ) : void
 {
-	extract($vars);
+	extract( $vars );
 	require $filename;
 }

@@ -1,12 +1,21 @@
 <?php
 
-$opts = getopt('i:o:', [], $lastIndex );
+$cwd = getcwd();
 
-$inputPath = $opts[ 'i' ];
-$outputPath = $opts[ 'o' ];
+// parse CLI options
+
+$opts = getopt('i:o:s:', [], $lastIndex );
+
+$inputPath = ( isset( $opts[ 'i' ] ) ? $opts[ 'i' ] : NULL );
+$outputPath = ( isset( $opts[ 'o' ] ) ? $opts[ 'o' ] : NULL );
+$inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
+
+// require the needed files
 
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
+
+require_once 'lib/Helper/File.php';
 
 require_once 'lib/Lexer.php';
 require_once 'lib/TokenStream.php';
@@ -15,8 +24,6 @@ require_once 'lib/Parser.php';
 require_once 'lib/Compiler.php';
 require_once 'lib/Environment.php';
 require_once 'lib/Runtime.php';
-
-require_once 'lib/Helper/File.php';
 
 require_once 'lib/Node/Node.php';
 require_once 'lib/Node/RootNode.php';
@@ -36,24 +43,27 @@ require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 
-$lexer = new \lib\Lexer();
-$tokens = $lexer->tokenize( file_get_contents( $inputPath ) );
+$source = ( $inputPath ? file_get_contents( $cwd . '/' . $inputPath ) : $inputSource );
 
+// lex
+$lexer = new \lib\Lexer();
+$tokens = $lexer->tokenize( $source );
+
+// parse
 $parser = new \lib\Parser( $tokens );
 $ast = $parser->parse();
 
+// compile
 $compiler = new \lib\Compiler();
-
 $output = $compiler->compile( $ast );
-$output .= '<?php return $env->getOutput(); ?>';
 
-/*
-if( ! file_exists( '../../cache' ) )
+// execute the compiled code
+$runtime = new \lib\Runtime();
+$runtime->setCwd( $cwd );
+
+if( $outputPath )
 {
-	mkdir( '../../cache', 0777 );
+	$runtime->setOutputFile( $outputPath );
 }
 
-file_put_contents( '../../cache/compiled.php', $output );
-file_put_contents( $outputPath, require '../../cache/compiled.php' );
-unlink( '../../cache/compiled.php' );
-*/
+$runtime->execute( new \lib\Environment(), $output );

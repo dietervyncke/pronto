@@ -4,16 +4,42 @@ namespace lib;
 
 class Runtime
 {
-	private $env;
+	private $cwd;
+	private $outputFile;
+
+	public function setCwd( $cwd )
+	{
+		$this->cwd = $cwd . '/';
+	}
+
+	public function setOutputFile( $filename )
+	{
+		$this->outputFile = $filename;
+	}
+
+	private function writeOutput( Environment $env )
+	{
+		if( ! $this->outputFile )
+		{
+			echo $env->getOutput();
+			return;
+		}
+
+		file_put_contents( $this->cwd . '/' . $this->outputFile, $env->getOutput() );
+	}
 
 	public function execute( Environment $env, $compiled )
 	{
-		$this->env = $env;
+		$tempFilename = $this->cwd . '/compiled.php';
 
-		// @TODO save the compiled code in a file
+		file_put_contents( $tempFilename, $compiled );
 
-		\lib\Helpers\File\scopedRequire( $filename, [
-			'env' => $this->env,
+		\lib\Helpers\File\scopedRequire( $tempFilename, [
+			'env' => $env,
 		] );
+
+		unlink( $tempFilename );
+
+		$this->writeOutput( $env );
 	}
 }
