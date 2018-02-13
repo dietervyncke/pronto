@@ -1,7 +1,5 @@
 <?php
 
-$cwd = getcwd();
-
 // parse CLI options
 
 $opts = getopt('i:o:s:', [], $lastIndex );
@@ -43,7 +41,7 @@ require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 
-$source = ( $inputPath ? file_get_contents( $cwd . '/' . $inputPath ) : $inputSource );
+$source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 
 // lex
 $lexer = new \lib\Lexer();
@@ -58,8 +56,7 @@ $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
 
 // execute the compiled code
-$runtime = new \lib\Runtime();
-$runtime->setCwd( $cwd );
+$runtime = new \lib\Runtime( getcwd() );
 
 if( $outputPath )
 {

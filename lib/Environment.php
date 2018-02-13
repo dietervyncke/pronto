@@ -6,6 +6,13 @@ use League\CLImate\CLImate;
 
 class Environment
 {
+	private $cwd;
+
+	public function setCwd( $cwd )
+	{
+		$this->cwd = $cwd;
+	}
+
 	const COLOR_RED = 'red';
 	const COLOR_GREEN = 'green';
 	const COLOR_DARK_GRAY = 'darkGray';
@@ -79,7 +86,7 @@ class Environment
 
 	public function includeTemplate( $filename )
 	{
-		$filename =  dirname( __DIR__ ) . $filename;
+		$filename =  $this->cwd . '/' . $filename;
 
 		if( file_exists( $filename ) )
 		{
@@ -90,9 +97,11 @@ class Environment
 			$ast = $parser->parse();
 
 			$compiler = new \lib\Compiler();
+			$output = $compiler->compile( $ast );
 
-			file_put_contents( 'temp.php', $compiler->compile( $ast ) );
-			$this->output .= require 'temp.php';
+			// execute the compiled code
+			$runtime = new \lib\Runtime( $this->cwd );
+			$runtime->execute( $this, $output );
 		}
 	}
 

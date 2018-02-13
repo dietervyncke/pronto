@@ -4,12 +4,14 @@ namespace lib;
 
 class Runtime
 {
+	private static $id = 0;
+
 	private $cwd;
 	private $outputFile;
 
-	public function setCwd( $cwd )
+	public function __construct( $cwd )
 	{
-		$this->cwd = $cwd . '/';
+		$this->cwd = $cwd;
 	}
 
 	public function setOutputFile( $filename )
@@ -19,18 +21,24 @@ class Runtime
 
 	private function writeOutput( Environment $env )
 	{
+		$output = $env->getOutput();
+
 		if( ! $this->outputFile )
 		{
-			echo $env->getOutput();
-			return;
+			echo $output;
+			return $output;
 		}
 
-		file_put_contents( $this->cwd . '/' . $this->outputFile, $env->getOutput() );
+		file_put_contents( $this->cwd . '/' . $this->outputFile, $output );
+		return $output;
 	}
 
 	public function execute( Environment $env, $compiled )
 	{
-		$tempFilename = $this->cwd . '/compiled.php';
+		self::$id++;
+
+		$env->setCwd( $this->cwd );
+		$tempFilename = $this->cwd . '/compiled-' . self::$id . '.php';
 
 		file_put_contents( $tempFilename, $compiled );
 
@@ -40,6 +48,6 @@ class Runtime
 
 		unlink( $tempFilename );
 
-		$this->writeOutput( $env );
+		return $this->writeOutput( $env );
 	}
 }
