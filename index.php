@@ -40,6 +40,7 @@ require_once 'lib/Node/NumberNode.php';
 require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
+require_once 'lib/Node/WriteFileNode.php';
 
 $source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 

@@ -84,6 +84,15 @@ class Environment
 		$this->indent--;
 	}
 
+	public function writeFile( $closure, $filename )
+	{
+		$output = $this->output;
+		$this->output = '';
+		call_user_func( $closure );
+		file_put_contents( $this->cwd . '/' . $filename, $this->getOutput() );
+		$this->output = $output;
+	}
+
 	public function includeTemplate( $filename )
 	{
 		$filename =  $this->cwd . '/' . $filename;
