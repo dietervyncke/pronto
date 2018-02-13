@@ -7,11 +7,13 @@ class Runtime
 	private static $id = 0;
 
 	private $cwd;
+	private $runPath;
 	private $outputFile;
 
-	public function __construct( $cwd )
+	public function __construct( $cwd, $runPath )
 	{
 		$this->cwd = $cwd;
+		$this->runPath = $runPath;
 	}
 
 	public function setOutputFile( $filename )
@@ -38,6 +40,8 @@ class Runtime
 		self::$id++;
 
 		$env->setCwd( $this->cwd );
+		$env->setRunPath( $this->runPath );
+
 		$tempFilename = $this->cwd . '/compiled-' . self::$id . '.php';
 
 		file_put_contents( $tempFilename, $compiled );

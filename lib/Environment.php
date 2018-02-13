@@ -7,10 +7,16 @@ use League\CLImate\CLImate;
 class Environment
 {
 	private $cwd;
+	private $runPath;
 
 	public function setCwd( $cwd )
 	{
 		$this->cwd = $cwd;
+	}
+
+	public function setRunPath( $runPath )
+	{
+		$this->runPath = $runPath;
 	}
 
 	const COLOR_RED = 'red';
@@ -86,7 +92,7 @@ class Environment
 
 	public function writeFile( $closure, $filename )
 	{
-		$output = $this->output;
+		$output = $this->getOutput();
 		$this->output = '';
 		call_user_func( $closure );
 		file_put_contents( $this->cwd . '/' . $filename, $this->getOutput() );
@@ -95,7 +101,7 @@ class Environment
 
 	public function includeTemplate( $filename )
 	{
-		$filename =  $this->cwd . '/' . $filename;
+		$filename =  $this->runPath . '/' . $filename;
 
 		if( file_exists( $filename ) )
 		{
@@ -106,11 +112,14 @@ class Environment
 			$ast = $parser->parse();
 
 			$compiler = new \lib\Compiler();
-			$output = $compiler->compile( $ast );
+			$compiled = $compiler->compile( $ast );
 
 			// execute the compiled code
-			$runtime = new \lib\Runtime( $this->cwd );
-			$runtime->execute( $this, $output );
+			$runtime = new \lib\Runtime( $this->cwd, $this->runPath );
+			$output = $this->output;
+			$this->output = '';
+			$this->output .= $runtime->execute( $this, $compiled );
+			$this->output = $output;
 		}
 	}
 
