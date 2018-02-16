@@ -92,6 +92,13 @@ class Environment
 
 	public function writeFile( $closure, $filename )
 	{
+		$dir = dirname( $this->cwd . '/' . $filename );
+
+		if( ! is_dir( $dir ) )
+		{
+			mkdir( $dir, 0777, TRUE );
+		}
+
 		$output = $this->getOutput();
 		$this->output = '';
 		call_user_func( $closure );
@@ -116,10 +123,7 @@ class Environment
 
 			// execute the compiled code
 			$runtime = new \lib\Runtime( $this->cwd, $this->runPath );
-			$output = $this->output;
-			$this->output = '';
-			$this->output .= $runtime->execute( $this, $compiled );
-			$this->output = $output;
+			$runtime->execute( $this, $compiled );
 		}
 	}
 

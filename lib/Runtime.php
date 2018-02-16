@@ -27,7 +27,7 @@ class Runtime
 
 		if( ! $this->outputFile )
 		{
-			echo $output;
+			//echo $output;
 			return $output;
 		}
 
