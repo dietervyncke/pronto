@@ -1,7 +1,5 @@
 .idea
 .DS_Store
 /vendor
-/examples/*
-/templates/*
 /output.php
 /temp.php

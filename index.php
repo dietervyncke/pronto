@@ -1,13 +1,27 @@
 <?php
 
+// parse CLI options
+
+$opts = getopt('i:o:s:', [], $lastIndex );
+
+$inputPath = ( isset( $opts[ 'i' ] ) ? $opts[ 'i' ] : NULL );
+$outputPath = ( isset( $opts[ 'o' ] ) ? $opts[ 'o' ] : NULL );
+$inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
+
+// require the needed files
+
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
+
+require_once 'lib/Helper/File.php';
 
 require_once 'lib/Lexer.php';
 require_once 'lib/TokenStream.php';
 require_once 'lib/Token.php';
 require_once 'lib/Parser.php';
 require_once 'lib/Compiler.php';
+require_once 'lib/Environment.php';
+require_once 'lib/Runtime.php';
 
 require_once 'lib/Node/Node.php';
 require_once 'lib/Node/RootNode.php';
@@ -27,20 +41,26 @@ require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 
+$source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
+
+// lex
 $lexer = new \lib\Lexer();
-//$tokens = $lexer->tokenize( file_get_contents( 'examples/md-offer.md' ) );
-$tokens = $lexer->tokenize( file_get_contents( 'examples/assign.tpl' ) );
+$tokens = $lexer->tokenize( $source );
 
-//util\printTokens( $tokens );
-
+// parse
 $parser = new \lib\Parser( $tokens );
 $ast = $parser->parse();
 
-//util\printChildren($ast);
-
+// compile
 $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
-$output .= '<?php return $env->getOutput(); ?>';
 
-file_put_contents( 'output.php', $output );
-file_put_contents( 'examples/compiled/my-new-offer.md', require 'output.php' );
+// execute the compiled code
+$runtime = new \lib\Runtime( getcwd() );
+
+if( $outputPath )
+{
+	$runtime->setOutputFile( $outputPath );
+}
+
+$runtime->execute( new \lib\Environment(), $output );
