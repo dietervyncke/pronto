@@ -40,8 +40,10 @@ require_once 'lib/Node/NumberNode.php';
 require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
+require_once 'lib/Node/WriteFileNode.php';
 
 $source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
+$runPath = ( dirname( getcwd() . '/' . $inputPath ) );
 
 // lex
 $lexer = new \lib\Lexer();
@@ -56,7 +58,8 @@ $compiler = new \lib\Compiler();
 $output = $compiler->compile( $ast );
 
 // execute the compiled code
-$runtime = new \lib\Runtime( getcwd() );
+
+$runtime = new \lib\Runtime( getcwd(), $runPath );
 
 if( $outputPath )
 {

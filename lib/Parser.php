@@ -11,6 +11,7 @@ use lib\Node\PrintNode;
 use lib\Node\RepeatNode;
 use lib\Node\RootNode;
 use lib\Node\TextNode;
+use lib\Node\WriteFileNode;
 
 class Parser
 {
@@ -40,6 +41,7 @@ class Parser
 		{
 			AssignmentNode::parse( $this );
 			RepeatNode::parse( $this );
+			WriteFileNode::parse( $this );
 			IncludeNode::parse( $this );
 			IfNode::parse( $this );
 			PrintNode::parse( $this );

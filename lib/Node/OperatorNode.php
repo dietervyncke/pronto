@@ -38,6 +38,10 @@ class OperatorNode extends Node
 		{
 			$compiler->writeBody( ' * ' );
 		}
+		elseif( $this->sign === '+' )
+		{
+			$compiler->writeBody( ' . ' );
+		}
 		else
 		{
 			$compiler->writeBody( ' + ' );
