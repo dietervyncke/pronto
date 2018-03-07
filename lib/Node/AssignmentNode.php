@@ -47,7 +47,8 @@ class AssignmentNode extends Node
 
 		$compiler->writeBody( ', ' );
 
-		foreach ( $this->getChildren() as $c ) {
+		foreach ( $this->getChildren() as $c )
+		{
 			$subcompiler = new Compiler();
 			$compiler->writeBody( $subcompiler->compile( $c ) );
 		}

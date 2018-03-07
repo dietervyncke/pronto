@@ -3,6 +3,7 @@
 namespace lib;
 
 use lib\Node\AssignmentNode;
+use lib\Node\BlockNode;
 use lib\Node\IfNode;
 use lib\Node\IncludeNode;
 use lib\Node\Node;
@@ -40,6 +41,7 @@ class Parser
 		if( $this->skip( Token::T_OPENING_TAG ) )
 		{
 			AssignmentNode::parse( $this );
+			BlockNode::parse( $this );
 			RepeatNode::parse( $this );
 			WriteFileNode::parse( $this );
 			IncludeNode::parse( $this );

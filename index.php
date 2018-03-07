@@ -41,6 +41,9 @@ require_once 'lib/Node/ParameterNode.php';
 require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 require_once 'lib/Node/WriteFileNode.php';
+require_once 'lib/Node/ConstantNode.php';
+require_once 'lib/Node/BlockNode.php';
+require_once 'lib/Node/OptionNode.php';
 
 $source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 $runPath = ( dirname( getcwd() . '/' . $inputPath ) );
@@ -52,6 +55,8 @@ $tokens = $lexer->tokenize( $source );
 // parse
 $parser = new \lib\Parser( $tokens );
 $ast = $parser->parse();
+
+//util\printChildren( $ast );
 
 // compile
 $compiler = new \lib\Compiler();

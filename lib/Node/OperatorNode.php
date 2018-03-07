@@ -40,11 +40,11 @@ class OperatorNode extends Node
 		}
 		elseif( $this->sign === '+' )
 		{
-			$compiler->writeBody( ' . ' );
+			$compiler->writeBody( ' + ' );
 		}
 		else
 		{
-			$compiler->writeBody( ' + ' );
+			$compiler->writeBody( ' . ' );
 		}
 	}
 }

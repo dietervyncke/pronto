@@ -27,6 +27,7 @@ class Environment
 
 	private $globalVariables = [];
 	private $localVariables = [];
+	private $blocks = [];
 
 	private $indent = 0;
 
@@ -62,6 +63,44 @@ class Environment
 	public function clearLocalVariables()
 	{
 		$this->localVariables = [];
+	}
+
+	public function setBlock( $name, $closure )
+	{
+		$this->prependBlock( $name, $closure );
+		$this->getBlock( $name );
+	}
+
+	public function prependBlock( $name, $closure )
+	{
+		if( isset( $this->blocks[ $name ] ) )
+		{
+			array_unshift( $this->blocks[ $name ], $closure );
+		}
+		else
+		{
+			$this->blocks[ $name ] = [ $closure ];
+		}
+	}
+
+	public function appendBlock( $name, $closure )
+	{
+		if( isset( $this->blocks[ $name ] ) )
+		{
+			$this->blocks[ $name ][] = $closure;
+		}
+		else
+		{
+			$this->blocks[ $name ] = [ $closure ];
+		}
+	}
+
+	public function getBlock( $name )
+	{
+		foreach( $this->blocks[ $name ] as $closure )
+		{
+			call_user_func( $closure );
+		}
 	}
 
 	public function repeat( $closure, $title = 'Repeat again?' )
