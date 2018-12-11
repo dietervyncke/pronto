@@ -2,40 +2,26 @@
 
 namespace lib;
 
+use lib\Contract\OutputInterface;
+
 class Runtime
 {
 	private static $id = 0;
 
-	private $cwd;
-	private $runPath;
-	private $outputFile;
+	private $output;
 
-	public function __construct( $cwd, $runPath )
+	private $cwd;
+
+	private $runPath;
+
+	public function __construct(OutputInterface $output, $cwd, $runPath)
 	{
+		$this->output = $output;
 		$this->cwd = $cwd;
 		$this->runPath = $runPath;
 	}
 
-	public function setOutputFile( $filename )
-	{
-		$this->outputFile = $filename;
-	}
-
-	private function writeOutput( Environment $env )
-	{
-		$output = $env->getOutput();
-
-		if( ! $this->outputFile )
-		{
-			//echo $output;
-			return $output;
-		}
-
-		file_put_contents( $this->cwd . '/' . $this->outputFile, $output );
-		return $output;
-	}
-
-	public function execute( Environment $env, $compiled )
+	public function execute(Environment $env, $compiled)
 	{
 		self::$id++;
 
@@ -52,6 +38,8 @@ class Runtime
 
 		unlink( $tempFilename );
 
-		return $this->writeOutput( $env );
+		$output = $env->getOutput();
+
+		$this->output->write( $output );
 	}
 }

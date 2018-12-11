@@ -13,6 +13,8 @@ $inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
 
+require_once 'lib/Contract/OutputInterface.php';
+
 require_once 'lib/Helper/File.php';
 
 require_once 'lib/Lexer.php';
@@ -22,6 +24,9 @@ require_once 'lib/Parser.php';
 require_once 'lib/Compiler.php';
 require_once 'lib/Environment.php';
 require_once 'lib/Runtime.php';
+
+require_once 'lib/Output/ConsoleOutput.php';
+require_once 'lib/Output/FileOutput.php';
 
 require_once 'lib/Node/Node.php';
 require_once 'lib/Node/RootNode.php';
@@ -55,15 +60,12 @@ $ast = $parser->parse();
 
 // compile
 $compiler = new \lib\Compiler();
-$output = $compiler->compile( $ast );
+$compiled = $compiler->compile( $ast );
 
 // execute the compiled code
 
-$runtime = new \lib\Runtime( getcwd(), $runPath );
+$output = ($outputPath ? new \lib\Output\FileOutput($outputPath) : new \lib\Output\ConsoleOutput());
 
-if( $outputPath )
-{
-	$runtime->setOutputFile( $outputPath );
-}
+$runtime = new \lib\Runtime($output, getcwd(), $runPath);
 
-$runtime->execute( new \lib\Environment(), $output );
+$runtime->execute(new \lib\Environment(), $compiled);
