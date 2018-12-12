@@ -14,4 +14,6 @@ interface RuntimeInterface
 
 	public function clearGlobalVariables(): void;
 	public function clearLocalVariables(): void;
+
+	public function getGlobalVariables(): array;
 }
