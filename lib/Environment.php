@@ -2,179 +2,133 @@
 
 namespace lib;
 
-use League\CLImate\CLImate;
+use lib\Contract\BufferInterface;
+use lib\Contract\InputInterface;
 use lib\Contract\OutputInterface;
 
 class Environment
 {
-	private $output;
 	private $cwd;
 	private $runPath;
 
-	private $outputString;
+	private $runtime;
+	private $buffer;
+	private $output;
+	private $input;
 
-	private $globalVariables = [];
-	private $localVariables = [];
+	private static $id = 0;
 
-	private $indent = 0;
-
-	const COLOR_RED = 'red';
-	const COLOR_GREEN = 'green';
-	const COLOR_DARK_GRAY = 'darkGray';
-
-	public function __construct(OutputInterface $output, $cwd, $runPath)
+	public function __construct(Runtime $runtime, BufferInterface $buffer, OutputInterface $output, InputInterface $input, $cwd, $runPath)
 	{
+		$this->runtime = $runtime;
+		$this->buffer = $buffer;
 		$this->output = $output;
+		$this->input = $input;
+
 		$this->cwd = $cwd;
 		$this->runPath = $runPath;
 	}
 
-	public function setGlobalVariable( $name, $value )
+	public function getLocalVariable(string $name, array $options = []): string
 	{
-		$this->globalVariables[ $name ] = $value;
-	}
-
-	public function getGlobalVariable( $name, $values = NULL )
-	{
-		if( isset( $this->globalVariables[ $name ] ) )
-		{
-			return $this->globalVariables[ $name ];
+		if ($this->runtime->hasLocalVariable($name)) {
+			return $this->runtime->getLocalVariable($name);
 		}
 
-		$this->globalVariables[ $name ] = ( $values ? $this->getOptions( $values, $name ) : $this->readInput( $name ) );
-
-		return $this->globalVariables[ $name ];
+		$value = (count($options) ? $this->input->select($name, $options) : $this->input->read($name));
+		$this->runtime->setLocalVariable($name, $value);
+		return $value;
 	}
 
-	public function getLocalVariable( $name, $values = NULL )
+	public function getGlobalVariable(string $name, array $options = []): string
 	{
-		if( isset( $this->localVariables[ $name ] ) )
-		{
-			return $this->localVariables[ $name ];
+		if ($this->runtime->hasGlobalVariable($name)) {
+			return $this->runtime->getGlobalVariable($name);
 		}
 
-		$this->localVariables[ $name ] = ( $values ? $this->getOptions( $values, $name ) : $this->readInput( $name ) );
-
-		return $this->localVariables[ $name ];
-	}
-
-	public function clearLocalVariables()
-	{
-		$this->localVariables = [];
+		$value = (count($options) ? $this->input->select($name, $options) : $this->input->read($name));
+		$this->runtime->setGlobalVariable($name, $value);
+		return $value;
 	}
 
 	public function repeat($closure, $title = 'Repeat again?')
 	{
-		$climate = new CLImate();
+		$this->input->write('Entering repeat statement');
 
-		$this->indent++;
+		while (true) {
 
-		$this->writeLine( 'Entering repeat statement', self::COLOR_DARK_GRAY );
+			$this->runtime->clearLocalVariables();
 
-		while( TRUE )
-		{
-			$this->clearLocalVariables();
-
-			$input = $climate->confirm( $title );
-
-			if( !$input->confirmed() )
-			{
-				$this->writeLine( 'Exiting repeat', self::COLOR_DARK_GRAY );
+			if (!$this->input->confirm($title)) {
+				$this->input->write('Exiting repeat');
 				break;
 			}
 
-			call_user_func( $closure );
+			call_user_func($closure);
 		}
-
-		$this->indent--;
 	}
 
-	public function writeFile( $closure, $filename )
+	public function writeFile($closure, $filename)
 	{
-		$dir = dirname( $this->cwd . '/' . $filename );
+		$dir = dirname($this->cwd . '/' . $filename);
 
-		if( ! is_dir( $dir ) )
-		{
-			mkdir( $dir, 0777, TRUE );
+		if (!is_dir($dir)) {
+			mkdir($dir, 0777, true);
 		}
 
-		$output = $this->render();
-		$this->outputString = '';
-		call_user_func( $closure );
-		file_put_contents( $this->cwd . '/' . $filename, $this->render() );
-		$this->outputString = $output;
+		$output = $this->buffer->read();
+		$this->buffer->clear();
+
+		call_user_func($closure);
+		file_put_contents($this->cwd . '/' . $filename, $this->buffer->read());
+
+		$this->buffer->write($output);
 	}
 
-	public function includeTemplate( $filename )
+	public function includeTemplate($filename)
 	{
 		$filename =  $this->runPath . '/' . $filename;
 
-		if( file_exists( $filename ) )
-		{
-			$lexer = new \lib\Lexer();
-			$tokens = $lexer->tokenize( file_get_contents( $filename ) );
+		if (file_exists($filename)) {
 
-			$parser = new \lib\Parser( $tokens );
+			$lexer = new \lib\Lexer();
+			$tokens = $lexer->tokenize(file_get_contents($filename));
+
+			$parser = new \lib\Parser($tokens);
 			$ast = $parser->parse();
 
 			$compiler = new \lib\Compiler();
 			$compiled = $compiler->compile( $ast );
 
+			// create a new runtime and pass it to the environment
+			$runtime = new \lib\Runtime();
+			$buffer = new DefaultBuffer();
+			$environment = new \lib\Environment($runtime, $buffer, $this->output, $this->input, $this->cwd, $this->runPath);
+
 			// execute the compiled code
-			$runtime = new \lib\Runtime( $this->output, $this->cwd, $this->runPath );
-			$runtime->execute( $this, $compiled );
+			$environment->execute($compiled);
 		}
 	}
 
-	private function getOptions( $values, $title = 'Select an option' )
+	public function execute(string $code)
 	{
-		while( TRUE )
-		{
-			$input = $this->printRadioButtonList( $title, $values );
-			$response = $input->prompt();
+		self::$id++;
 
-			if( $response )
-			{
-				return $response;
-			}
-		}
+		$tempFilename = $this->cwd . '/compiled-' . self::$id . '.php';
 
-		return NULL;
+		file_put_contents($tempFilename, $code);
+
+		\lib\Helpers\File\scopedRequire($tempFilename, [
+			'env' => $this,
+		]);
+
+		unlink($tempFilename);
+
+		$this->output->write($this->buffer->read());
 	}
 
-	public function write( $text )
+	public function write(string $string)
 	{
-		$this->outputString .= $text;
-	}
-
-	public function render()
-	{
-		return $this->outputString;
-	}
-
-	// CLI helpers
-
-	private function writeLine( $string, $color )
-	{
-		$climate = new CLImate();
-		$climate->$color()->bold( $this->getIndentString() . $string );
-	}
-
-	private function getIndentString()
-	{
-		return str_repeat( '>>>', $this->indent ) . ( $this->indent ? ' ' : NULL );
-	}
-
-	private function printRadioButtonList( $title, $values, $color = Environment::COLOR_GREEN )
-	{
-		$climate = new CLImate();
-		return $climate->$color()->radio( $title, $values );
-	}
-
-	private function readInput( $title, $color = Environment::COLOR_GREEN )
-	{
-		$climate = new CLImate();
-		$input = $climate->$color()->input( $this->getIndentString() . $title );
-		return $input->prompt();
+		$this->buffer->write($string);
 	}
 }

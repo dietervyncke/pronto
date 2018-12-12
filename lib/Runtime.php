@@ -2,39 +2,50 @@
 
 namespace lib;
 
-use lib\Contract\OutputInterface;
+use lib\Contract\RuntimeInterface;
 
-class Runtime
+class Runtime implements RuntimeInterface
 {
-	private static $id = 0;
+	private $globalVars = [];
+	private $localVars = [];
 
-	private $output;
-
-	private $cwd;
-
-	private $runPath;
-
-	public function __construct(OutputInterface $output, $cwd, $runPath)
+	public function setGlobalVariable(string $name, $value): void
 	{
-		$this->output = $output;
-		$this->cwd = $cwd;
-		$this->runPath = $runPath;
+		$this->globalVars[$name] = $value;
 	}
 
-	public function execute(Environment $env, $compiled)
+	public function getGlobalVariable(string $name): string
 	{
-		self::$id++;
+		return $this->globalVars[$name];
+	}
 
-		$tempFilename = $this->cwd . '/compiled-' . self::$id . '.php';
+	public function hasGlobalVariable(string $name): bool
+	{
+		return isset($this->globalVars[$name]);
+	}
 
-		file_put_contents( $tempFilename, $compiled );
+	public function setLocalVariable(string $name, $value): void
+	{
+		$this->localVars[$name] = $value;
+	}
 
-		\lib\Helpers\File\scopedRequire( $tempFilename, [
-			'env' => $env,
-		] );
+	public function getLocalVariable(string $name): string
+	{
+		return $this->localVars[$name];
+	}
 
-		unlink( $tempFilename );
+	public function hasLocalVariable(string $name): bool
+	{
+		return isset($this->localVars[$name]);
+	}
 
-		$this->output->write( $env->render() );
+	public function clearGlobalVariables(): void
+	{
+		$this->globalVars = [];
+	}
+
+	public function clearLocalVariables(): void
+	{
+		$this->localVars = [];
 	}
 }
