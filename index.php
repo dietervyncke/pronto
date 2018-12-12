@@ -14,7 +14,10 @@ $writeDir = ( isset( $opts[ 'd' ] ) ? $opts[ 'd' ] : NULL );
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
 
+require_once 'lib/Contract/BufferInterface.php';
+require_once 'lib/Contract/InputInterface.php';
 require_once 'lib/Contract/OutputInterface.php';
+require_once 'lib/Contract/RuntimeInterface.php';
 
 require_once 'lib/Helper/File.php';
 
@@ -28,6 +31,10 @@ require_once 'lib/Runtime.php';
 
 require_once 'lib/Output/ConsoleOutput.php';
 require_once 'lib/Output/FileOutput.php';
+
+require_once 'lib/Input/ConsoleInput.php';
+
+require_once 'lib/Buffer/DefaultBuffer.php';
 
 require_once 'lib/Node/Node.php';
 require_once 'lib/Node/RootNode.php';
@@ -62,11 +69,18 @@ $ast = $parser->parse();
 
 // compile
 $compiler = new \lib\Compiler();
-$compiled = $compiler->compile( $ast );
+$code = $compiler->compile( $ast );
 
 // execute the compiled code
 
 $output = ($outputPath ? new \lib\Output\FileOutput($outputPath) : new \lib\Output\ConsoleOutput());
+$input = new \lib\Input\ConsoleInput();
 
-$runtime = new \lib\Runtime($output, $cwd, $runPath);
-$runtime->execute(new \lib\Environment($output, $cwd, $runPath), $compiled);
+// create a new runtime and buffer and pass them to the environment
+
+$runtime = new \lib\Runtime();
+$buffer = new \lib\Buffer\DefaultBuffer();
+$environment = new \lib\Environment($runtime, $buffer, $output, $input, $cwd, $runPath);
+
+// execute the compiled code
+$environment->execute($code);
