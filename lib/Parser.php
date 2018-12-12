@@ -21,24 +21,22 @@ class Parser
 	private $rootNode;
 	private $scopeNode;
 
-	public function __construct( TokenStream $stream )
+	public function __construct(TokenStream $stream)
 	{
 		$this->tokenStream = $stream;
 		$this->rootNode = $this->scopeNode = new RootNode();
 	}
 
-	public function parse( $startPosition = 0 )
+	public function parse($startPosition = 0)
 	{
-		if( $startPosition >= count( $this->tokenStream->getTokens() ) )
-		{
-			return;
+		if ($startPosition >= count($this->tokenStream->getTokens())) {
+			return null;
 		}
 
 		TextNode::parse( $this );
 		NumberNode::parse( $this );
 
-		if( $this->skip( Token::T_OPENING_TAG ) )
-		{
+		if($this->skip(Token::T_OPENING_TAG)) {
 			AssignmentNode::parse( $this );
 			RepeatNode::parse( $this );
 			WriteFileNode::parse( $this );
@@ -52,13 +50,12 @@ class Parser
 
 	public function restartParse()
 	{
-		$this->parse( $this->currentTokenIndex );
+		$this->parse($this->currentTokenIndex);
 	}
 
 	public function advance()
 	{
-		if( $this->currentTokenIndex < count( $this->tokenStream->getTokens() ) - 1 )
-		{
+		if ($this->currentTokenIndex < count($this->tokenStream->getTokens()) - 1) {
 			$this->currentTokenIndex++;
 		}
 	}
@@ -95,17 +92,17 @@ class Parser
 
 	public function traverseUp()
 	{
-		$this->setScopeNode( $this->getScopeNode()->getLastChild() );
+		$this->setScopeNode($this->getScopeNode()->getLastChild());
 	}
 
 	public function traverseDown()
 	{
-		$this->setScopeNode( $this->getScopeNode()->getParent() );
+		$this->setScopeNode($this->getScopeNode()->getParent());
 	}
 
 	public function getCurrentToken()
 	{
-		return $this->tokenStream->getToken( $this->currentTokenIndex );
+		return $this->tokenStream->getToken($this->currentTokenIndex);
 	}
 
 	public function setScopeNode( Node $node )

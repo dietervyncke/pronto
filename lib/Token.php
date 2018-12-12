@@ -43,6 +43,10 @@ class Token
 		self::T_IDENT => 'T_IDENT',
 		self::T_GLOBAL_VAR => 'T_GLOBAL_VAR',
 		self::T_LOCAL_VAR => 'T_LOCAL_VAR',
+		self::T_PARAM_OPENING_TAG => 'T_PARAM_OPENING_TAG',
+		self::T_PARAM_CLOSING_TAG => 'T_PARAM_CLOSING_TAG',
+		self::T_NUMBER => 'T_NUMBER',
+		self::T_SYMBOL => 'T_SYMBOL',
 		self::T_OP => 'T_OP',
 	];
 
@@ -54,15 +58,14 @@ class Token
 
 	public function getName()
 	{
-		if( isset( self::$tokentypes[ $this->type ] ) )
-		{
-			return self::$tokentypes[ $this->type ];
+		if (isset(self::$tokentypes[$this->type])) {
+			return self::$tokentypes[$this->type];
 		}
 
 		return 'T_UNKNOWN';
 	}
 
-	public function getType()
+	public function getType(): string
 	{
 		return $this->type;
 	}
@@ -72,7 +75,7 @@ class Token
 		return $this->value;
 	}
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->getType() . '(' . $this->getValue() . ')' . "\n";
 	}
