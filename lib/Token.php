@@ -41,8 +41,6 @@ class Token
 		self::T_IDENT => 'T_IDENT',
 		self::T_GLOBAL_VAR => 'T_GLOBAL_VAR',
 		self::T_LOCAL_VAR => 'T_LOCAL_VAR',
-		self::T_PARAM_OPENING_TAG => 'T_PARAM_OPENING_TAG',
-		self::T_PARAM_CLOSING_TAG => 'T_PARAM_CLOSING_TAG',
 		self::T_NUMBER => 'T_NUMBER',
 		self::T_SYMBOL => 'T_SYMBOL',
 		self::T_OP => 'T_OP',
