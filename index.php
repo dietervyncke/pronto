@@ -2,11 +2,12 @@
 
 // parse CLI options
 
-$opts = getopt('i:o:s:', [], $lastIndex );
+$opts = getopt('i:o:s:d:', [], $lastIndex );
 
 $inputPath = ( isset( $opts[ 'i' ] ) ? $opts[ 'i' ] : NULL );
 $outputPath = ( isset( $opts[ 'o' ] ) ? $opts[ 'o' ] : NULL );
 $inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
+$writeDir = ( isset( $opts[ 'd' ] ) ? $opts[ 'd' ] : NULL );
 
 // require the needed files
 
@@ -47,6 +48,7 @@ require_once 'lib/Node/IncludeNode.php';
 require_once 'lib/Node/AssignmentNode.php';
 require_once 'lib/Node/WriteFileNode.php';
 
+$cwd = getcwd();
 $source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 $runPath = ( dirname( getcwd() . '/' . $inputPath ) );
 
@@ -66,6 +68,5 @@ $compiled = $compiler->compile( $ast );
 
 $output = ($outputPath ? new \lib\Output\FileOutput($outputPath) : new \lib\Output\ConsoleOutput());
 
-$runtime = new \lib\Runtime($output, getcwd(), $runPath);
-
-$runtime->execute(new \lib\Environment(), $compiled);
+$runtime = new \lib\Runtime($output, $cwd, $runPath);
+$runtime->execute(new \lib\Environment($output, $cwd, $runPath), $compiled);

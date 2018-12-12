@@ -25,9 +25,6 @@ class Runtime
 	{
 		self::$id++;
 
-		$env->setCwd( $this->cwd );
-		$env->setRunPath( $this->runPath );
-
 		$tempFilename = $this->cwd . '/compiled-' . self::$id . '.php';
 
 		file_put_contents( $tempFilename, $compiled );
@@ -38,8 +35,6 @@ class Runtime
 
 		unlink( $tempFilename );
 
-		$output = $env->getOutput();
-
-		$this->output->write( $output );
+		$this->output->write( $env->render() );
 	}
 }

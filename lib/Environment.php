@@ -3,32 +3,31 @@
 namespace lib;
 
 use League\CLImate\CLImate;
+use lib\Contract\OutputInterface;
 
 class Environment
 {
+	private $output;
 	private $cwd;
 	private $runPath;
 
-	public function setCwd( $cwd )
-	{
-		$this->cwd = $cwd;
-	}
-
-	public function setRunPath( $runPath )
-	{
-		$this->runPath = $runPath;
-	}
-
-	const COLOR_RED = 'red';
-	const COLOR_GREEN = 'green';
-	const COLOR_DARK_GRAY = 'darkGray';
-
-	private $output = '';
+	private $outputString;
 
 	private $globalVariables = [];
 	private $localVariables = [];
 
 	private $indent = 0;
+
+	const COLOR_RED = 'red';
+	const COLOR_GREEN = 'green';
+	const COLOR_DARK_GRAY = 'darkGray';
+
+	public function __construct(OutputInterface $output, $cwd, $runPath)
+	{
+		$this->output = $output;
+		$this->cwd = $cwd;
+		$this->runPath = $runPath;
+	}
 
 	public function setGlobalVariable( $name, $value )
 	{
@@ -64,7 +63,7 @@ class Environment
 		$this->localVariables = [];
 	}
 
-	public function repeat( $closure, $title = 'Repeat again?' )
+	public function repeat($closure, $title = 'Repeat again?')
 	{
 		$climate = new CLImate();
 
@@ -99,11 +98,11 @@ class Environment
 			mkdir( $dir, 0777, TRUE );
 		}
 
-		$output = $this->getOutput();
-		$this->output = '';
+		$output = $this->render();
+		$this->outputString = '';
 		call_user_func( $closure );
-		file_put_contents( $this->cwd . '/' . $filename, $this->getOutput() );
-		$this->output = $output;
+		file_put_contents( $this->cwd . '/' . $filename, $this->render() );
+		$this->outputString = $output;
 	}
 
 	public function includeTemplate( $filename )
@@ -122,7 +121,7 @@ class Environment
 			$compiled = $compiler->compile( $ast );
 
 			// execute the compiled code
-			$runtime = new \lib\Runtime( $this->cwd, $this->runPath );
+			$runtime = new \lib\Runtime( $this->output, $this->cwd, $this->runPath );
 			$runtime->execute( $this, $compiled );
 		}
 	}
@@ -145,12 +144,12 @@ class Environment
 
 	public function write( $text )
 	{
-		$this->output .= $text;
+		$this->outputString .= $text;
 	}
 
-	public function getOutput()
+	public function render()
 	{
-		return $this->output;
+		return $this->outputString;
 	}
 
 	// CLI helpers
