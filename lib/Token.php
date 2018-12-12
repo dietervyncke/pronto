@@ -29,8 +29,6 @@ class Token
 	const T_IDENT = 'T_IDENT';
 	const T_GLOBAL_VAR = 'T_GLOBAL_VAR';
 	const T_LOCAL_VAR = 'T_LOCAL_VAR';
-	const T_PARAM_OPENING_TAG = 'T_PARAM_OPENING_TAG';
-	const T_PARAM_CLOSING_TAG = 'T_PARAM_CLOSING_TAG';
 	const T_NUMBER = 'T_NUMBER';
 	const T_SYMBOL = 'T_SYMBOL';
 	const T_OP = 'T_OP';
