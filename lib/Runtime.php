@@ -24,6 +24,11 @@ class Runtime implements RuntimeInterface
 		return isset($this->globalVars[$name]);
 	}
 
+	public function getGlobalVariables(): array
+	{
+		return $this->globalVars;
+	}
+
 	public function setLocalVariable(string $name, $value): void
 	{
 		$this->localVars[$name] = $value;
