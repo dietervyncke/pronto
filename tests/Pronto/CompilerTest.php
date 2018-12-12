@@ -2,9 +2,9 @@
 
 namespace Tests\Pronto;
 
-use lib\Compiler;
-use lib\Node\RootNode;
-use lib\Node\TextNode;
+use Pronto\Compiler;
+use Pronto\Node\RootNode;
+use Pronto\Node\TextNode;
 use PHPUnit\Framework\TestCase;
 
 class CompilerTest extends TestCase
