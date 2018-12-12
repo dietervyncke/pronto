@@ -38,7 +38,7 @@ class AssignmentNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '<?php $env->setGlobalVariable( ' );
+		$compiler->writeBody( '<?php $env->setGlobalVariable(' );
 
 		foreach ( $this->getAttributes() as $a )
 		{
@@ -52,7 +52,6 @@ class AssignmentNode extends Node
 			$compiler->writeBody( $subcompiler->compile( $c ) );
 		}
 
-		$compiler->writeBody( ' ) ?>' );
+		$compiler->writeBody( '); ?>' );
 	}
 }
-
