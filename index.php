@@ -14,73 +14,32 @@ $writeDir = ( isset( $opts[ 'd' ] ) ? $opts[ 'd' ] : NULL );
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
 
-require_once 'lib/Contract/BufferInterface.php';
-require_once 'lib/Contract/InputInterface.php';
-require_once 'lib/Contract/OutputInterface.php';
-require_once 'lib/Contract/RuntimeInterface.php';
-
-require_once 'lib/Helper/File.php';
-
-require_once 'lib/Lexer.php';
-require_once 'lib/TokenStream.php';
-require_once 'lib/Token.php';
-require_once 'lib/Parser.php';
-require_once 'lib/Compiler.php';
-require_once 'lib/Environment.php';
-require_once 'lib/Runtime.php';
-
-require_once 'lib/Output/ConsoleOutput.php';
-require_once 'lib/Output/FileOutput.php';
-
-require_once 'lib/Input/ConsoleInput.php';
-
-require_once 'lib/Buffer/DefaultBuffer.php';
-
-require_once 'lib/Node/Node.php';
-require_once 'lib/Node/RootNode.php';
-require_once 'lib/Node/GlobalVariableNode.php';
-require_once 'lib/Node/LocalVariableNode.php';
-require_once 'lib/Node/RepeatNode.php';
-require_once 'lib/Node/TextNode.php';
-require_once 'lib/Node/IfNode.php';
-require_once 'lib/Node/ConditionNode.php';
-require_once 'lib/Node/ExpressionNode.php';
-require_once 'lib/Node/PrintNode.php';
-require_once 'lib/Node/StringNode.php';
-require_once 'lib/Node/LogicalOperatorNode.php';
-require_once 'lib/Node/OperatorNode.php';
-require_once 'lib/Node/NumberNode.php';
-require_once 'lib/Node/ParameterNode.php';
-require_once 'lib/Node/IncludeNode.php';
-require_once 'lib/Node/AssignmentNode.php';
-require_once 'lib/Node/WriteFileNode.php';
-
 $cwd = getcwd();
 $source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 $runPath = ( dirname( getcwd() . '/' . $inputPath ) );
 
 // lex
-$lexer = new \lib\Lexer();
+$lexer = new \Pronto\Lexer();
 $tokens = $lexer->tokenize( $source );
 
 // parse
-$parser = new \lib\Parser( $tokens );
+$parser = new \Pronto\Parser( $tokens );
 $ast = $parser->parse();
 
 // compile
-$compiler = new \lib\Compiler();
+$compiler = new \Pronto\Compiler();
 $code = $compiler->compile( $ast );
 
 // execute the compiled code
 
-$output = ($outputPath ? new \lib\Output\FileOutput($outputPath) : new \lib\Output\ConsoleOutput());
-$input = new \lib\Input\ConsoleInput();
+$output = ($outputPath ? new \Pronto\Output\FileOutput($outputPath) : new \Pronto\Output\ConsoleOutput());
+$input = new \Pronto\Input\ConsoleInput();
 
 // create a new runtime and buffer and pass them to the environment
 
-$runtime = new \lib\Runtime();
-$buffer = new \lib\Buffer\DefaultBuffer();
-$environment = new \lib\Environment($runtime, $buffer, $output, $input, $cwd, $runPath);
+$runtime = new \Pronto\Runtime();
+$buffer = new \Pronto\Buffer\DefaultBuffer();
+$environment = new \Pronto\Environment($runtime, $buffer, $output, $input, $cwd, $runPath);
 
 // execute the compiled code
 $environment->execute($code);

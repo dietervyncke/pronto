@@ -2,9 +2,9 @@
 
 namespace Tests\Pronto;
 
-use lib\Lexer;
-use lib\Token;
-use lib\TokenStream;
+use Pronto\Lexer;
+use Pronto\Token;
+use Pronto\TokenStream;
 use PHPUnit\Framework\TestCase;
 
 class LexerTest extends TestCase

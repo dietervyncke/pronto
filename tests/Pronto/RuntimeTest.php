@@ -2,7 +2,7 @@
 
 namespace Tests\Pronto;
 
-use lib\Runtime;
+use Pronto\Runtime;
 use PHPUnit\Framework\TestCase;
 
 class RuntimeTest extends TestCase

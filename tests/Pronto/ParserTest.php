@@ -2,10 +2,10 @@
 
 namespace Tests\Pronto;
 
-use lib\Node\RootNode;
-use lib\Parser;
-use lib\Token;
-use lib\TokenStream;
+use Pronto\Node\RootNode;
+use Pronto\Parser;
+use Pronto\Token;
+use Pronto\TokenStream;
 use PHPUnit\Framework\TestCase;
 
 class ParserTest extends TestCase

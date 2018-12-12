@@ -5,6 +5,14 @@
 	"require-dev": {
 		"phpunit/phpunit": "^7"
 	},
+    "autoload": {
+      "psr-4": {
+        "Pronto\\": "src/Pronto/"
+      },
+      "files": [
+        "src/Pronto/Helper/File.php"
+      ]
+    },
 	"autoload-dev": {
 		"psr-4": {
 			"Tests\\": "tests/"

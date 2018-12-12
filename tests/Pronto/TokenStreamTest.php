@@ -2,8 +2,8 @@
 
 namespace Tests\Pronto;
 
-use lib\Token;
-use lib\TokenStream;
+use Pronto\Token;
+use Pronto\TokenStream;
 use PHPUnit\Framework\TestCase;
 
 class TokenStreamTest extends TestCase
