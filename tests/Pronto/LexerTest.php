@@ -18,6 +18,7 @@ class LexerTest extends TestCase
 
 	public function testTokenizeShouldReturnInstanceOfTokenStream()
 	{
+		$this->tokenizeShouldReturnInstanceOfTokenStream('');
 		$this->tokenizeShouldReturnInstanceOfTokenStream(' ');
 		$this->tokenizeShouldReturnInstanceOfTokenStream('some dummy text');
 		$this->tokenizeShouldReturnInstanceOfTokenStream('{{');
@@ -35,7 +36,7 @@ class LexerTest extends TestCase
 		$this->tokenizeShouldReturnInstanceOfTokenStream('{{ /if }}');
 	}
 
-	public function testTokenValueTest()
+	public function testTokenValue()
 	{
 		$this->tokenValueTest('{{', '');
 		$this->tokenValueTest('}}', '}}');

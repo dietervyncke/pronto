@@ -16,7 +16,7 @@ class AssignmentNode extends Node
 			$parser->traverseUp();
 			$parser->advance();
 
-			if( GlobalVariableNode::parse( $parser ) || LocalVariableNode::parse( $parser ) )
+			if( GlobalVariableNode::parse( $parser ) )
 			{
 				$parser->setAttribute();
 			}
