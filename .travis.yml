@@ -5,3 +5,7 @@ php:
 install:
   - composer install
 script: vendor/bin/phpunit --debug
+branches:
+  only:
+  - master
+  - dev
