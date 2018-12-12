@@ -47,7 +47,7 @@ class TokenTest extends TestCase
 
 		$token = new Token(Token::T_LOCAL_VAR, 'a token value');
 		$this->assertEquals('T_LOCAL_VAR', $token->getName());
-		
+
 		$token = new Token(Token::T_NUMBER, 'a token value');
 		$this->assertEquals('T_NUMBER', $token->getName());
 

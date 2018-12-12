@@ -26,4 +26,15 @@ class ParserTest extends TestCase
 
 		$this->assertInstanceOf(RootNode::class, $parser->parse());
 	}
+
+	public function testGetCurrentToken()
+	{
+		$tokenStream = new TokenStream();
+		$tokenStream->addToken(new Token('a token type', 'a token value'));
+
+		$parser = new Parser($tokenStream);
+
+		$this->assertInstanceOf(Token::class, $parser->getCurrentToken());
+		$this->assertEquals('a token value', $parser->getCurrentToken()->getValue());
+	}
 }
