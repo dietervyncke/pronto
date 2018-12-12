@@ -2,7 +2,7 @@
 
 namespace Tests\Pronto;
 
-use lib\Token;
+use Pronto\Token;
 use PHPUnit\Framework\TestCase;
 
 class TokenTest extends TestCase
