@@ -22,8 +22,8 @@ class Lexer
 	const MODE_INSIDE_TAG = 1;
 	const MODE_STRING = 2;
 	const MODE_IDENT = 3;
-	const MODE_VAR  = 4;
-	const MODE_PARAM  = 5;
+	const MODE_VAR = 4;
+	const MODE_PARAM = 5;
 	const MODE_NUMBER = 6;
 
 	public function tokenize( $input )

@@ -2,6 +2,7 @@
 
 namespace lib;
 
+use lib\Buffer\DefaultBuffer;
 use lib\Contract\BufferInterface;
 use lib\Contract\InputInterface;
 use lib\Contract\OutputInterface;
@@ -82,6 +83,7 @@ class Environment
 		call_user_func($closure);
 		file_put_contents($this->cwd . '/' . $filename, $this->buffer->read());
 
+		$this->buffer->clear();
 		$this->buffer->write($output);
 	}
 
