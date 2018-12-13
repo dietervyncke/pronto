@@ -63,8 +63,11 @@ class AssignmentNodeTest extends TestCase
 		$tokenStream = $lexer->tokenize($code);
 
 		$parser = new \Pronto\Parser($tokenStream);
+		$parser->skip(Token::T_OPENING_TAG);
+		AssignmentNode::parse($parser);
 
 		$compiler = new Compiler();
-		$this->assertEquals($compiled, $compiler->compile($parser->parse()));
+
+		$this->assertEquals($compiled, $compiler->compile($parser->getScopeNode()->getLastChild()));
 	}
 }
