@@ -3,30 +3,34 @@
 namespace Pronto\Node;
 
 use Pronto\Compiler;
+use Pronto\Exception\SyntaxError;
 use Pronto\Parser;
 use Pronto\Token;
 
 class AssignmentNode extends Node
 {
-	public static function parse( Parser $parser )
+	public static function parse(Parser $parser)
 	{
-		if( $parser->accept( Token::T_IDENT, 'var' ) )
-		{
-			$parser->insert( new static() );
+		if ($parser->accept(Token::T_IDENT, 'var')) {
+
+			$parser->insert(new static());
 			$parser->traverseUp();
 			$parser->advance();
 
-			if( GlobalVariableNode::parse( $parser ) )
-			{
-				$parser->setAttribute();
+			if (!GlobalVariableNode::parse($parser)) {
+				throw new SyntaxError('Expected global variable');
 			}
 
-			$parser->accept( Token::T_IDENT, 'is' );
+			$parser->setAttribute();
+
+			$parser->expect(Token::T_IDENT, 'is');
 			$parser->advance();
 
-			ExpressionNode::parse( $parser );
+			if (! ExpressionNode::parse($parser)) {
+				throw new SyntaxError('Expected expression');
+			}
 
-			$parser->skip( Token::T_CLOSING_TAG );
+			$parser->skip(Token::T_CLOSING_TAG);
 			$parser->traverseDown();
 			$parser->restartParse();
 

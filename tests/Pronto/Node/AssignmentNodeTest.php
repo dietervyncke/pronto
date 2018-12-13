@@ -4,6 +4,7 @@ namespace Tests\Pronto\Node;
 
 use PHPUnit\Framework\TestCase;
 use Pronto\Compiler;
+use Pronto\Exception\SyntaxError;
 use Pronto\Node\AssignmentNode;
 use Pronto\Token;
 
@@ -27,12 +28,32 @@ class AssignmentNodeTest extends TestCase
 		$this->checkIfParserReturnsFalse('{{ ar ?=my_variable_name is "my value" + 5 }}');
 	}
 
+	public function testParsingThrowsSyntaxErrorWhenMissingIs()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ var ?=variable 10 }}');
+	}
+
+	public function testParsingThrowsSyntaxErrorWhenMissingGlobalVar()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ var is 10 }}');
+	}
+
+	public function testParsingThrowsSyntaxErrorWhenMissingExpression()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ var ?=variable is }}');
+	}
+
+	public function testParsingThrowsSyntaxErrorWhenUsingLocalVar()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ var ?-variable is "my value" }}');
+	}
+
 	public function testCompilingResults()
 	{
-		$this->checkIfCompilerIsCorrect('{{ var ?=variable is 10 }}', '<?php $env->setGlobalVariable(\'variable\', 10); ?>');
-		$this->checkIfCompilerIsCorrect('{{ var ?=my_variable is 1.0 }}', '<?php $env->setGlobalVariable(\'my_variable\', 1.0); ?>');
-		$this->checkIfCompilerIsCorrect('{{ var ?=variable is "hello" }}', '<?php $env->setGlobalVariable(\'variable\', \'hello\'); ?>');
-		$this->checkIfCompilerIsCorrect('{{ var ?=variable is \'hello\' }}', '<?php $env->setGlobalVariable(\'variable\', \'hello\'); ?>');
+		$this->checkIfCompilerGivesExactResult('{{ var ?=variable is 10 }}', '<?php $env->setGlobalVariable(\'variable\', 10); ?>');
+		$this->checkIfCompilerGivesExactResult('{{ var ?=my_variable is 1.0 }}', '<?php $env->setGlobalVariable(\'my_variable\', 1.0); ?>');
+		$this->checkIfCompilerGivesExactResult('{{ var ?=variable is "hello" }}', '<?php $env->setGlobalVariable(\'variable\', \'hello\'); ?>');
+		$this->checkIfCompilerGivesExactResult('{{ var ?=variable is \'hello\' }}', '<?php $env->setGlobalVariable(\'variable\', \'hello\'); ?>');
 	}
 
 	public function checkIfParserReturnsTrue($code)
@@ -57,7 +78,19 @@ class AssignmentNodeTest extends TestCase
 		$this->assertFalse(AssignmentNode::parse($parser));
 	}
 
-	public function checkIfCompilerIsCorrect($code, $compiled)
+	public function checkIfParserThrowsSyntaxError($code)
+	{
+		$lexer = new \Pronto\Lexer();
+		$tokenStream = $lexer->tokenize($code);
+
+		$parser = new \Pronto\Parser($tokenStream);
+		$parser->skip(Token::T_OPENING_TAG);
+
+		$this->expectException(SyntaxError::class);
+		AssignmentNode::parse($parser);
+	}
+
+	public function checkIfCompilerGivesExactResult($code, $compiled)
 	{
 		$lexer = new \Pronto\Lexer();
 		$tokenStream = $lexer->tokenize($code);
