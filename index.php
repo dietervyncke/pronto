@@ -1,22 +1,30 @@
 <?php
 
-// parse CLI options
-
-$opts = getopt('i:o:s:d:', [], $lastIndex );
-
-$inputPath = ( isset( $opts[ 'i' ] ) ? $opts[ 'i' ] : NULL );
-$outputPath = ( isset( $opts[ 'o' ] ) ? $opts[ 'o' ] : NULL );
-$inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
-$writeDir = ( isset( $opts[ 'd' ] ) ? $opts[ 'd' ] : NULL );
-
 // require the needed files
 
 require_once 'util/debug.inc.php';
 require_once 'vendor/autoload.php';
 
+// parse CLI options
+
+$opts = getopt('ai:o:s:d:', [], $lastIndex );
+
+$interactiveShell = (isset($opts['a']) ? true : false);
+$inputPath = ( isset( $opts[ 'i' ] ) ? $opts[ 'i' ] : NULL );
+$outputPath = ( isset( $opts[ 'o' ] ) ? $opts[ 'o' ] : NULL );
+$inputSource = ( isset( $opts[ 's' ] ) ? $opts[ 's' ] : NULL );
+$writeDir = ( isset( $opts[ 'd' ] ) ? $opts[ 'd' ] : NULL );
+
+
 $cwd = getcwd();
-$source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 $runPath = ( dirname( getcwd() . '/' . $inputPath ) );
+
+if ($interactiveShell) {
+	$shell = new \Pronto\Console\InteractiveShell(new \Pronto\Input\ConsoleInput(), $cwd, $runPath);
+	$shell->start();
+}
+
+$source = ( $inputPath ? file_get_contents( getcwd() . '/' . $inputPath ) : $inputSource );
 
 // lex
 $lexer = new \Pronto\Lexer();

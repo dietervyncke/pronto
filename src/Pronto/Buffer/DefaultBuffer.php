@@ -6,7 +6,7 @@ use Pronto\Contract\BufferInterface;
 
 class DefaultBuffer implements BufferInterface
 {
-	private $contents;
+	private $contents = '';
 
 	public function write(string $string): void
 	{
