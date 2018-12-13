@@ -7,10 +7,10 @@ use Pronto\Contract\InputInterface;
 
 class ConsoleInput implements InputInterface
 {
-	public function read(string $title): string
+	public function read(string $string): string
 	{
 		$climate = new CLImate();
-		$input = $climate->green()->input( $title );
+		$input = $climate->green()->input($string);
 		return $input->prompt();
 	}
 
@@ -31,6 +31,8 @@ class ConsoleInput implements InputInterface
 	public function select(string $string, array $values): string
 	{
 		$climate = new CLImate();
-		return $climate->radio($string, $values);
+		$input = $climate->radio($string, $values);
+
+		return $input->prompt();
 	}
 }

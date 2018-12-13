@@ -2,12 +2,14 @@
 
 namespace Pronto\Output;
 
+use League\CLImate\CLImate;
 use Pronto\Contract\OutputInterface;
 
 class ConsoleOutput implements OutputInterface
 {
-	public function write(string $string)
+	public function write(string $string): void
 	{
-		echo $string;
+		$climate = new CLImate();
+		$climate->blue($string);
 	}
 }

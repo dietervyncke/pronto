@@ -52,6 +52,16 @@ class Environment
 		return $value;
 	}
 
+	public function setGlobalVariable(string $name, $value)
+	{
+		$this->runtime->setGlobalVariable($name, $value);
+	}
+
+	public function setLocalVariable(string $name, $value)
+	{
+		$this->runtime->setLocalVariable($name, $value);
+	}
+
 	public function repeat($closure, $title = 'Repeat again?')
 	{
 		$this->input->write('Entering repeat statement');
