@@ -124,6 +124,13 @@ class Lexer
 			$this->setMode(self::MODE_IDENT);
 			return;
 
+		}
+		elseif(preg_match('@'.Token::REGEX_T_IDENT_CLOSING_START.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_IDENT.'@', $this->getNextChar())) {
+			$this->currentValue = $this->currentChar;
+			$this->setMode( self::MODE_IDENT );
+			$this->advanceCursor();
+			return;
+
 		} elseif (preg_match('@'.Token::REGEX_T_NUMBER.'@', $this->currentChar)) {
 			$this->setMode(self::MODE_NUMBER);
 			return;
