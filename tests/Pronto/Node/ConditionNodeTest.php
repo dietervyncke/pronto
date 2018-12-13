@@ -11,12 +11,11 @@ class ConditionNodeTest extends TestCase
 {
 	public function testParsingReturnsTrue()
 	{
-		$this->checkIfParserReturnsTrue('{{ if 5+6 equals 10 }}');
-		$this->checkIfParserReturnsTrue('{{ if 5 equals 10 }}');
-		$this->checkIfParserReturnsTrue('{{ if 5 }}' );
-		$this->checkIfParserReturnsTrue('{{ if equals }}' );
-		$this->checkIfParserReturnsTrue('{{ if 5+6+4 equals 50 }}dummy text{{ /if }}');
-		$this->checkIfParserReturnsTrue('{{ if 5 q 6 }}');
+		$this->checkIfParserReturnsTrue('{{ 5+6 equals 10 }}');
+		$this->checkIfParserReturnsTrue('{{ 5 equals 20 }}');
+		$this->checkIfParserReturnsTrue('{{ 5 }}' );
+		$this->checkIfParserReturnsTrue('{{ 5+6+4 equals 50 }}dummy text{{ /if }}');
+		$this->checkIfParserReturnsTrue('{{ 5 q 6 }}');
 	}
 
 //	public function testParsingReturnsFalse()
