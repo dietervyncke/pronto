@@ -7,7 +7,6 @@ use Pronto\Node\AssignmentNode;
 use Pronto\Node\IfNode;
 use Pronto\Node\IncludeNode;
 use Pronto\Node\Node;
-use Pronto\Node\NumberNode;
 use Pronto\Node\PrintNode;
 use Pronto\Node\RepeatNode;
 use Pronto\Node\RootNode;
@@ -34,16 +33,16 @@ class Parser
 			return null;
 		}
 
-		TextNode::parse( $this );
-		NumberNode::parse( $this );
+		TextNode::parse($this);
 
-		if($this->skip(Token::T_OPENING_TAG)) {
-			AssignmentNode::parse( $this );
-			RepeatNode::parse( $this );
-			WriteFileNode::parse( $this );
-			IncludeNode::parse( $this );
-			IfNode::parse( $this );
-			PrintNode::parse( $this );
+		if ($this->skip(Token::T_OPENING_TAG)) {
+
+			AssignmentNode::parse($this);
+			RepeatNode::parse($this);
+			IncludeNode::parse($this);
+			PrintNode::parse($this);
+			WriteFileNode::parse($this);
+			IfNode::parse($this);
 		}
 
 		return $this->rootNode;
@@ -78,14 +77,14 @@ class Parser
 		return true;
 	}
 
-	public function skip( $tokenType, $value = NULL )
+	public function skip($tokenType, $value = null)
 	{
 		if($this->accept($tokenType, $value)) {
 			$this->advance();
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function wrap( Node $node )
@@ -131,8 +130,8 @@ class Parser
 		$this->getScopeNode()->setAttribute( $last );
 	}
 
-	public function insert( Node $node )
+	public function insert(Node $node)
 	{
-		$this->getScopeNode()->addChild( $node );
+		$this->getScopeNode()->addChild($node);
 	}
 }
