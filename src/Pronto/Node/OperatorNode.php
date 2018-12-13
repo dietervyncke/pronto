@@ -10,41 +10,25 @@ class OperatorNode extends Node
 {
 	private $sign;
 
-	public function __construct( $sign )
+	public function __construct($sign)
 	{
 		$this->sign = $sign;
 	}
 
-	public static function parse( Parser $parser )
+	public static function parse(Parser $parser)
 	{
-		if( $parser->accept( Token::T_OP ) )
-		{
-			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
+		if ($parser->accept(Token::T_OP)) {
+			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
-	public function compile( Compiler $compiler )
+	public function compile(Compiler $compiler)
 	{
-		if( $this->sign === '-' )
-		{
-			$compiler->writeBody( ' - ' );
-		}
-		elseif( $this->sign === '*' )
-		{
-			$compiler->writeBody( ' * ' );
-		}
-		elseif( $this->sign === '+' )
-		{
-			$compiler->writeBody( ' . ' );
-		}
-		else
-		{
-			$compiler->writeBody( ' + ' );
-		}
+		$compiler->writeBody($this->sign);
 	}
 }
