@@ -3,11 +3,12 @@
 namespace Pronto\Node;
 
 use Pronto\Compiler;
+use Pronto\Exception\SyntaxError;
 use Pronto\Parser;
 
 class ExpressionNode extends Node
 {
-	public static function parse(Parser $parser)
+	public static function parse(Parser $parser, $strict = false)
 	{
 		if (GlobalVariableNode::parse($parser) ||
 			StringNode::parse($parser) ||
@@ -19,13 +20,16 @@ class ExpressionNode extends Node
 			}
 
 			if (OperatorNode::parse($parser)) {
-				self::parse($parser);
-
+				self::parse($parser, true);
 			} else {
 				$parser->traverseDown();
 			}
 
 			return true;
+		}
+
+		if ($strict) {
+			throw new SyntaxError('Expected expression');
 		}
 
 		return false;
