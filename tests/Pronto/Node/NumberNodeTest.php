@@ -29,10 +29,10 @@ class NumberNodeTest extends TestCase
 
 	public function testCompilingResults()
 	{
-		$this->checkIfCompilerIsCorrect('{{ 10 }}', '<?php $env->write(10); ?>');
-		$this->checkIfCompilerIsCorrect('{{ 1.00 }}', '<?php $env->write(1.00); ?>');
-		$this->checkIfCompilerIsCorrect('{{ .75 }}', '<?php $env->write(.75); ?>');
-		$this->checkIfCompilerIsCorrect('{{ 5000.000 }}', '<?php $env->write(5000.000); ?>');
+		$this->checkIfCompilerIsCorrect('{{ 10 }}', '10');
+		$this->checkIfCompilerIsCorrect('{{ 1.00 }}', '1.00');
+		$this->checkIfCompilerIsCorrect('{{ .75 }}', '.75');
+		$this->checkIfCompilerIsCorrect('{{ 5000.000 }}', '5000.000');
 	}
 
 	public function checkIfParserReturnsTrue($code)
@@ -63,8 +63,11 @@ class NumberNodeTest extends TestCase
 		$tokenStream = $lexer->tokenize($code);
 
 		$parser = new \Pronto\Parser($tokenStream);
+		$parser->skip(Token::T_OPENING_TAG);
+		NumberNode::parse($parser);
 
 		$compiler = new Compiler();
-		$this->assertEquals($compiled, $compiler->compile($parser->parse()));
+
+		$this->assertEquals($compiled, $compiler->compile($parser->getScopeNode()->getLastChild()));
 	}
 }
