@@ -7,35 +7,31 @@ use Pronto\Parser;
 
 class ConditionNode extends Node
 {
-	public static function parse( Parser $parser )
+	public static function parse(Parser $parser)
 	{
-		if( ExpressionNode::parse( $parser ) || LogicalOperatorNode::parse( $parser ) )
-		{
-			if( !$parser->getScopeNode() instanceof self )
-			{
-				$parser->wrap( new static() );
+		if (ExpressionNode::parse( $parser) || LogicalOperatorNode::parse($parser)) {
+
+			if (!$parser->getScopeNode() instanceof self) {
+				$parser->wrap(new static());
 			}
 
-			if( ExpressionNode::parse( $parser ) || LogicalOperatorNode::parse( $parser ) )
-			{
+			if (ExpressionNode::parse($parser) || LogicalOperatorNode::parse($parser)) {
 				self::parse( $parser );
-			}
-			else
-			{
+
+			} else {
 				$parser->traverseDown();
 			}
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
-	public function compile( Compiler $compiler )
+	public function compile(Compiler $compiler)
 	{
-		foreach( $this->getChildren() as $child )
-		{
-			$child->compile( $compiler );
+		foreach ($this->getChildren() as $child) {
+			$child->compile($compiler);
 		}
 	}
 }
