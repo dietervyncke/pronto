@@ -6,24 +6,24 @@ use Pronto\Compiler;
 
 abstract class Node
 {
-	private $parent = NULL;
+	private $parent = null;
 	private $children = [];
 	private $attributes = [];
 
-	public function addChild( Node $node )
+	public function addChild(Node $node)
 	{
 		$this->children[] = $node;
-		$node->setParent( $this );
+		$node->setParent($this);
 	}
 
-	public function setAttribute( Node $node )
+	public function setAttribute(Node $node)
 	{
 		$this->attributes[] = $node;
 	}
 
-	public function getAttribute( $i )
+	public function getAttribute($i)
 	{
-		return isset( $this->attributes[ $i ] ) ? $this->attributes[ $i ] : null;
+		return isset($this->attributes[$i]) ? $this->attributes[$i] : null;
 	}
 
 	public function getAttributes()
@@ -38,12 +38,15 @@ abstract class Node
 
 	public function getLastChild()
 	{
-		return end( $this->children );
+		if ($last = end($this->children)) {
+			return $last;
+		}
+		return null;
 	}
 
 	public function removeLastChild()
 	{
-		array_pop( $this->children );
+		array_pop($this->children);
 	}
 
 	public function getParent()
@@ -51,10 +54,10 @@ abstract class Node
 		return $this->parent;
 	}
 
-	public function setParent( Node $parent ){
-
+	public function setParent(Node $parent)
+	{
 		$this->parent = $parent;
 	}
 
-	public abstract function compile( Compiler $compiler );
+	public abstract function compile(Compiler $compiler);
 }
