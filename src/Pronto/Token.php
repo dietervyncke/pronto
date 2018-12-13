@@ -54,11 +54,7 @@ class Token
 
 	public function getName()
 	{
-		if (isset(self::$tokentypes[$this->type])) {
-			return self::$tokentypes[$this->type];
-		}
-
-		return 'T_UNKNOWN';
+		return self::getNameByType($this->type);
 	}
 
 	public function getType(): string
@@ -74,5 +70,14 @@ class Token
 	public function __toString(): string
 	{
 		return $this->getType() . '(' . $this->getValue() . ')' . "\n";
+	}
+
+	public static function getNameByType(string $type)
+	{
+		if (isset(self::$tokentypes[$type])) {
+			return self::$tokentypes[$type];
+		}
+
+		return 'T_UNKNOWN';
 	}
 }
