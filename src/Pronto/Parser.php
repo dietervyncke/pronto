@@ -2,6 +2,7 @@
 
 namespace Pronto;
 
+use Pronto\Exception\SyntaxError;
 use Pronto\Node\AssignmentNode;
 use Pronto\Node\IfNode;
 use Pronto\Node\IncludeNode;
@@ -60,18 +61,26 @@ class Parser
 		}
 	}
 
-	public function accept( $tokenType, $value = NULL )
+	public function accept($tokenType, $value = null)
 	{
 		return (
 			$this->getCurrentToken()->getType() === $tokenType &&
-			( $value ? $this->getCurrentToken()->getValue() === $value : TRUE )
+			( $value ? $this->getCurrentToken()->getValue() === $value : true )
 		);
+	}
+
+	public function expect($tokenType, $value = null): bool
+	{
+		if (!$this->accept($tokenType, $value)) {
+			throw new SyntaxError('Expected '.Token::getNameByType($tokenType).' got '.$this->getCurrentToken()->getName());
+		}
+
+		return true;
 	}
 
 	public function skip( $tokenType, $value = NULL )
 	{
-		if( $this->accept( $tokenType, $value ) )
-		{
+		if($this->accept($tokenType, $value)) {
 			$this->advance();
 			return TRUE;
 		}
