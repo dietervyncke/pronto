@@ -30,11 +30,11 @@ class OperatorNodeTest extends TestCase
 
 	public function testCompilingResults()
 	{
-		$this->checkIfCompilerIsCorrect('{{ 5 +2 }}', '<?php $env->write(5+2); ?>');
-		$this->checkIfCompilerIsCorrect('{{6+9}}', '<?php $env->write(6+9); ?>');
-		$this->checkIfCompilerIsCorrect('{{1-6}}', '<?php $env->write(1-6); ?>');
-		$this->checkIfCompilerIsCorrect('{{2%3}}', '<?php $env->write(2%3); ?>');
-		$this->checkIfCompilerIsCorrect('{{ 10*5 - 8 }}', '<?php $env->write(10*5-8); ?>');
+		$this->checkIfCompilerIsCorrect('{{ + }}', '+');
+		$this->checkIfCompilerIsCorrect('{{ - }}', '-');
+		$this->checkIfCompilerIsCorrect('{{ % }}', '%');
+		$this->checkIfCompilerIsCorrect('{{ * }}', '*');
+		$this->checkIfCompilerIsCorrect('{{ / }}', '/');
 	}
 
 	public function checkIfParserReturnsTrue($code)
@@ -65,8 +65,11 @@ class OperatorNodeTest extends TestCase
 		$tokenStream = $lexer->tokenize($code);
 
 		$parser = new \Pronto\Parser($tokenStream);
+		$parser->skip(Token::T_OPENING_TAG);
+		OperatorNode::parse($parser);
 
 		$compiler = new Compiler();
-		$this->assertEquals($compiled, $compiler->compile($parser->parse()));
+
+		$this->assertEquals($compiled, $compiler->compile($parser->getScopeNode()->getLastChild()));
 	}
 }
