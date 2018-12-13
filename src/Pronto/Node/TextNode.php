@@ -10,16 +10,16 @@ class TextNode extends Node
 {
 	private $text;
 
-	public function __construct( $text )
+	public function __construct($text)
 	{
 		$this->text = $text;
 	}
 
-	public static function parse( Parser $parser )
+	public static function parse(Parser $parser)
 	{
-		if( $parser->accept( Token::T_TEXT ) )
+		if($parser->accept(Token::T_TEXT))
 		{
-			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
+			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
 			return TRUE;
@@ -28,8 +28,8 @@ class TextNode extends Node
 		return FALSE;
 	}
 
-	public function compile( Compiler $compiler )
+	public function compile(Compiler $compiler)
 	{
-		$compiler->writeBody( '<?php $env->write(\'' . str_replace( '\'', '\\\'', $this->text ) . '\'); ?>' );
+		$compiler->writeBody('<?php $env->write(\'' . str_replace('\'', '\\\'', $this->text) . '\'); ?>');
 	}
 }
