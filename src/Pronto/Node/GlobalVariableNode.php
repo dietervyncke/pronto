@@ -10,31 +10,28 @@ class GlobalVariableNode extends Node
 {
 	private $name;
 
-	public function __construct( $name )
+	public function __construct($name)
 	{
 		$this->name = $name;
 	}
 
-	public static function parse( Parser $parser )
+	public static function parse(Parser $parser)
 	{
-		if( $parser->accept( Token::T_GLOBAL_VAR ) )
-		{
-			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
+		if ($parser->accept(Token::T_GLOBAL_VAR)) {
+
+			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
-			if( $parser->skip( Token::T_SYMBOL, '(' ) )
-			{
+			if ($parser->skip(Token::T_SYMBOL, '(')) {
 				$parser->traverseUp();
 
-				if( ParameterNode::parse( $parser ) )
-				{
+				if (ParameterNode::parse($parser)) {
 					$parser->setAttribute();
 				}
 
 				$parser->traverseDown();
+				$parser->skip(Token::T_SYMBOL, ')');
 			}
-
-			$parser->skip( Token::T_SYMBOL, ')' );
 
 			return true;
 		}
@@ -47,21 +44,19 @@ class GlobalVariableNode extends Node
 		return $this->name;
 	}
 
-	public function compile( Compiler $compiler )
+	public function compile(Compiler $compiler)
 	{
-		$compiler->writeBody( '$env->getGlobalVariable( \'' . $this->name . '\'' );
+		$compiler->writeBody('$env->getGlobalVariable(\'' . $this->name . '\'');
 
-		if( count( $this->getAttributes() ) )
-		{
-			$compiler->writeBody( ', ' );
+		if (count($this->getAttributes())) {
+			$compiler->writeBody(', ');
 		}
 
-		foreach ( $this->getAttributes() as $a )
-		{
+		foreach ($this->getAttributes() as $a) {
 			$subcompiler = new Compiler();
-			$compiler->writeBody( $subcompiler->compile( $a ) );
+			$compiler->writeBody($subcompiler->compile($a));
 		}
 
-		$compiler->writeBody( ' )' );
+		$compiler->writeBody(')');
 	}
 }

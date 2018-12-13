@@ -17,7 +17,7 @@ class Token
 	const REGEX_T_IDENT_CLOSING_START = '[\/]'; // /
 	const REGEX_T_STRING_DELIMITER = '[\"\']'; // " '
 
-	const REGEX_T_VAR = '^[a-zA-Z._-]+';
+	const REGEX_T_VAR = '[a-zA-Z\_]';
 	const REGEX_T_VAR_START = '\?';
 	const REGEX_T_GLOBAL_VAR = '\=';
 	const REGEX_T_LOCAL_VAR = '\-';

@@ -17,29 +17,27 @@ class LocalVariableNode extends Node
 
 	public static function parse( Parser $parser )
 	{
-		if( $parser->accept( Token::T_LOCAL_VAR ) )
-		{
-			$parser->insert( new static( $parser->getCurrentToken()->getValue() ) );
+		if ($parser->accept(Token::T_LOCAL_VAR)) {
+
+			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
-			if( $parser->skip( Token::T_SYMBOL, '(' ) )
-			{
+			if ($parser->skip(Token::T_SYMBOL, '(')) {
+
 				$parser->traverseUp();
 
-				if( ParameterNode::parse( $parser ) )
-				{
+				if (ParameterNode::parse($parser)) {
 					$parser->setAttribute();
 				}
 
+				$parser->skip(Token::T_SYMBOL, ')');
 				$parser->traverseDown();
 			}
 
-			$parser->skip( Token::T_SYMBOL, ')' );
-
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getName()
@@ -49,19 +47,17 @@ class LocalVariableNode extends Node
 
 	public function compile( Compiler $compiler )
 	{
-		$compiler->writeBody( '$env->getLocalVariable( \'' . $this->name . '\'' );
+		$compiler->writeBody( '$env->getLocalVariable(\'' . $this->name . '\'' );
 
-		if( count( $this->getAttributes() ) )
-		{
-			$compiler->writeBody( ', ' );
+		if (count($this->getAttributes())) {
+			$compiler->writeBody(', ');
 		}
 
-		foreach ( $this->getAttributes() as $a )
-		{
+		foreach ($this->getAttributes() as $a) {
 			$subcompiler = new Compiler();
-			$compiler->writeBody( $subcompiler->compile( $a ) );
+			$compiler->writeBody($subcompiler->compile($a));
 		}
 
-		$compiler->writeBody( ' )' );
+		$compiler->writeBody(')');
 	}
 }

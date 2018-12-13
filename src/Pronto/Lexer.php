@@ -22,9 +22,10 @@ class Lexer
 	const MODE_INSIDE_TAG = 1;
 	const MODE_STRING = 2;
 	const MODE_IDENT = 3;
-	const MODE_VAR = 4;
-	const MODE_PARAM = 5;
-	const MODE_NUMBER = 6;
+	const MODE_LOCAL_VAR = 4;
+	const MODE_GLOBAL_VAR = 5;
+	const MODE_PARAM = 6;
+	const MODE_NUMBER = 7;
 
 	public function tokenize($input)
 	{
@@ -48,8 +49,11 @@ class Lexer
 				case self::MODE_IDENT:
 					$this->lexIdent();
 					break;
-				case self::MODE_VAR:
-					$this->lexVar();
+				case self::MODE_LOCAL_VAR:
+					$this->lexLocalVar();
+					break;
+				case self::MODE_GLOBAL_VAR:
+					$this->lexGlobalVar();
 					break;
 				case self::MODE_STRING:
 					$this->lexString();
@@ -135,9 +139,14 @@ class Lexer
 			$this->setMode(self::MODE_NUMBER);
 			return;
 
-		} elseif (preg_match('@'.Token::REGEX_T_VAR_START.'@', $this->currentChar)) {
-			$this->setMode(self::MODE_VAR);
-			$this->advanceCursor();
+		} elseif ( preg_match('@'.Token::REGEX_T_VAR_START.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_GLOBAL_VAR.'@', $this->getNextChar() ) ) {
+			$this->setMode(self::MODE_GLOBAL_VAR);
+			$this->advanceCursor(2);
+			return;
+
+		} elseif ( preg_match('@'.Token::REGEX_T_VAR_START.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_LOCAL_VAR.'@', $this->getNextChar() ) ) {
+			$this->setMode(self::MODE_LOCAL_VAR);
+			$this->advanceCursor(2);
 			return;
 
 		} elseif (preg_match('@'.Token::REGEX_T_STRING_DELIMITER.'@', $this->currentChar)) {
@@ -158,7 +167,7 @@ class Lexer
 
 	private function lexIdent()
 	{
-		//store chars until
+		// store chars until
 		if (!preg_match('@'.Token::REGEX_T_IDENT.'@', $this->currentChar)) {
 			$this->stream->addToken(new Token(Token::T_IDENT, $this->currentValue));
 			$this->currentValue = '';
@@ -170,23 +179,32 @@ class Lexer
 		$this->advanceCursor();
 	}
 
-	private function lexVar()
+	private function lexGlobalVar()
 	{
-		$variableType = Token::T_GLOBAL_VAR;
-
-		if (preg_match('@'.Token::REGEX_T_LOCAL_VAR.'@', $this->currentChar)) {
-			$variableType = Token::T_LOCAL_VAR;
-		}
-
-		$this->advanceCursor();
-
-		if (preg_match('@'.Token::REGEX_T_VAR.'@', substr($this->input, $this->cursor), $matches)) {
-			$variableName = $matches[0];
-			$this->stream->addToken(new Token($variableType, $variableName));
-			$this->advanceCursor(strlen($variableName));
+		//store chars until
+		if (!preg_match('@'.Token::REGEX_T_VAR.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_GLOBAL_VAR, $this->currentValue));
+			$this->currentValue = '';
 			$this->setMode(self::MODE_INSIDE_TAG);
 			return;
 		}
+
+		$this->currentValue .= $this->currentChar;
+		$this->advanceCursor();
+	}
+
+	private function lexLocalVar()
+	{
+		//store chars until
+		if (!preg_match('@'.Token::REGEX_T_VAR.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_LOCAL_VAR, $this->currentValue));
+			$this->currentValue = '';
+			$this->setMode(self::MODE_INSIDE_TAG);
+			return;
+		}
+
+		$this->currentValue .= $this->currentChar;
+		$this->advanceCursor();
 	}
 
 	private function lexNumber()
