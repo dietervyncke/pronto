@@ -6,11 +6,10 @@ use Pronto\Compiler;
 
 class RootNode extends Node
 {
-	public function compile( Compiler $compiler )
+	public function compile(Compiler $compiler)
 	{
-		foreach( $this->getChildren() as $node )
-		{
-			$node->compile( $compiler );
+		foreach ($this->getChildren() as $node) {
+			$node->compile($compiler);
 		}
 	}
 }

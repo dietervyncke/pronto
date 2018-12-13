@@ -34,10 +34,10 @@ class AssignmentNode extends Node
 			$parser->traverseDown();
 			$parser->restartParse();
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function compile( Compiler $compiler )

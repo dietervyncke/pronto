@@ -36,10 +36,10 @@ class GlobalVariableNode extends Node
 
 			$parser->skip( Token::T_SYMBOL, ')' );
 
-			return TRUE;
+			return true;
 		}
 
-		return FALSE;
+		return false;
 	}
 
 	public function getName()

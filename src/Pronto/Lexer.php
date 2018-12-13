@@ -26,21 +26,19 @@ class Lexer
 	const MODE_PARAM = 5;
 	const MODE_NUMBER = 6;
 
-	public function tokenize( $input )
+	public function tokenize($input)
 	{
-		$this->prepare( $input );
+		$this->prepare($input);
 
-		while( $this->cursor < $this->end )
-		{
-			$this->currentChar = $this->input[ $this->cursor ];
+		while ($this->cursor < $this->end) {
 
-			if( preg_match( '@' . Token::REGEX_T_EOL . '@', $this->currentChar ) )
-			{
+			$this->currentChar = $this->input[$this->cursor];
+
+			if (preg_match('@'.Token::REGEX_T_EOL.'@', $this->currentChar)) {
 				++$this->line;
 			}
 
-			switch ( $this->mode )
-			{
+			switch ($this->mode) {
 				case self::MODE_ALL:
 					$this->lexAll();
 					break;
@@ -65,16 +63,16 @@ class Lexer
 		return $this->stream;
 	}
 
-	private function prepare( $input )
+	private function prepare($input)
 	{
-		$this->input = str_replace( [ "\n\r", "\r" ], "\n", $input );
+		$this->input = str_replace(["\n\r", "\r"], "\n", $input);
 
 		$this->stream = new TokenStream();
-		$this->setMode( self::MODE_ALL );
+		$this->setMode(self::MODE_ALL);
 
 		$this->line = 1;
 		$this->cursor = 0;
-		$this->end = strlen( $this->input );
+		$this->end = strlen($this->input);
 		$this->lastCharPos = $this->end - 1;
 
 		$this->currentChar = '';
@@ -85,29 +83,26 @@ class Lexer
 	private function lexAll()
 	{
 		// only text is found as input
-		if( $this->cursor + 1 === $this->end )
+		if ($this->cursor + 1 === $this->end)
 		{
-			$this->stream->addToken( new Token( Token::T_TEXT, $this->currentValue.$this->currentChar ) );
+			$this->stream->addToken(new Token(Token::T_TEXT, $this->currentValue.$this->currentChar));
 			$this->advanceCursor(); // escape while-loop
-
-			return ;
+			return;
 		}
 
 		// start opening tag {{
-		if( preg_match( '@' . Token::REGEX_T_OPENING_TAG . '@', $this->currentChar ) && preg_match( '@' . Token::REGEX_T_OPENING_TAG . '@', $this->getNextChar() ) )
-		{
+		if (preg_match('@'.Token::REGEX_T_OPENING_TAG.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_OPENING_TAG.'@', $this->getNextChar())) {
+
 			// save all stored chars before the opening tag
-			if( $this->currentValue !== '' )
-			{
-				$this->stream->addToken( new Token( Token::T_TEXT, $this->currentValue ) );
+			if ($this->currentValue !== '') {
+				$this->stream->addToken(new Token(Token::T_TEXT, $this->currentValue));
 				$this->currentValue = '';
 			}
 
-			$this->stream->addToken( new Token( Token::T_OPENING_TAG, '' ) );
-			$this->advanceCursor( 2 );
+			$this->stream->addToken(new Token(Token::T_OPENING_TAG, ''));
+			$this->advanceCursor(2);
 			$this->mode = self::MODE_INSIDE_TAG;
-
-			return ;
+			return;
 		}
 
 		// temp value for token
@@ -118,60 +113,44 @@ class Lexer
 	private function lexInsideTag()
 	{
 		//closing tag
-		if( preg_match( '@'. Token::REGEX_T_CLOSING_TAG . '@', $this->currentChar ) && preg_match( '@'. Token::REGEX_T_CLOSING_TAG . '@', $this->getNextChar() ) )
-		{
-			$this->stream->addToken( new Token( Token::T_CLOSING_TAG, '' ) );
+		if (preg_match('@'.Token::REGEX_T_CLOSING_TAG.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_CLOSING_TAG.'@', $this->getNextChar())) {
+			$this->stream->addToken(new Token(Token::T_CLOSING_TAG, ''));
 			$this->currentValue = '';
-			$this->advanceCursor( 2 );
-			$this->setMode( self::MODE_ALL );
-
+			$this->advanceCursor(2);
+			$this->setMode(self::MODE_ALL);
 			return;
-		}
-		elseif( preg_match( '@'. Token::REGEX_T_IDENT . '@', $this->currentChar ) )
-		{
-			$this->setMode( self::MODE_IDENT );
 
+		} elseif (preg_match('@'.Token::REGEX_T_IDENT.'@', $this->currentChar)) {
+			$this->setMode(self::MODE_IDENT);
 			return;
+
 		}
-		elseif(
-			preg_match( '@' . Token::REGEX_T_IDENT_CLOSING_START . '@', $this->currentChar ) &&
-			preg_match( '@' . Token::REGEX_T_IDENT . '@', $this->getNextChar() )
-		)
-		{
+		elseif(preg_match('@'.Token::REGEX_T_IDENT_CLOSING_START.'@', $this->currentChar) && preg_match('@'.Token::REGEX_T_IDENT.'@', $this->getNextChar())) {
 			$this->currentValue = $this->currentChar;
 			$this->setMode( self::MODE_IDENT );
 			$this->advanceCursor();
-
 			return;
-		}
-		elseif( preg_match( '@' . Token::REGEX_T_NUMBER . '@', $this->currentChar ) )
-		{
-			$this->setMode( self::MODE_NUMBER );
 
+		} elseif (preg_match('@'.Token::REGEX_T_NUMBER.'@', $this->currentChar)) {
+			$this->setMode(self::MODE_NUMBER);
 			return;
-		}
-		elseif( preg_match( '@' . Token::REGEX_T_VAR_START . '@', $this->currentChar ) )
-		{
-			$this->setMode( self::MODE_VAR );
+
+		} elseif (preg_match('@'.Token::REGEX_T_VAR_START.'@', $this->currentChar)) {
+			$this->setMode(self::MODE_VAR);
 			$this->advanceCursor();
-
 			return;
-		}
-		elseif( preg_match( '@'. Token::REGEX_T_STRING_DELIMITER . '@', $this->currentChar ) )
-		{
-			$this->setMode( self::MODE_STRING );
+
+		} elseif (preg_match('@'.Token::REGEX_T_STRING_DELIMITER.'@', $this->currentChar)) {
+			$this->setMode(self::MODE_STRING);
 			$this->modeStartChar = $this->currentChar;
 			$this->advanceCursor();
-
 			return;
-		}
-		elseif( preg_match( '@' . Token::REGEX_T_OP . '@', $this->currentChar ) )
-		{
-			$this->stream->addToken( new Token( Token::T_OP, $this->currentChar ) );
-		}
-		elseif( preg_match( '@' . Token::REGEX_T_SYMBOL . '@', $this->currentChar ) )
-		{
-			$this->stream->addToken( new Token( Token::T_SYMBOL, $this->currentChar ) );
+
+		} elseif (preg_match('@'.Token::REGEX_T_OP.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_OP, $this->currentChar));
+
+		} elseif (preg_match('@'.Token::REGEX_T_SYMBOL.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_SYMBOL, $this->currentChar));
 		}
 
 		$this->advanceCursor();
@@ -180,12 +159,10 @@ class Lexer
 	private function lexIdent()
 	{
 		//store chars until
-		if( !preg_match( '@' . Token::REGEX_T_IDENT . '@', $this->currentChar ) )
-		{
-			$this->stream->addToken( new Token( Token::T_IDENT, $this->currentValue ) );
+		if (!preg_match('@'.Token::REGEX_T_IDENT.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_IDENT, $this->currentValue));
 			$this->currentValue = '';
-			$this->setMode( self::MODE_INSIDE_TAG );
-
+			$this->setMode(self::MODE_INSIDE_TAG);
 			return;
 		}
 
@@ -197,32 +174,27 @@ class Lexer
 	{
 		$variableType = Token::T_GLOBAL_VAR;
 
-		if ( preg_match( '@' . Token::REGEX_T_LOCAL_VAR . '@', $this->currentChar ) )
-		{
+		if (preg_match('@'.Token::REGEX_T_LOCAL_VAR.'@', $this->currentChar)) {
 			$variableType = Token::T_LOCAL_VAR;
 		}
 
 		$this->advanceCursor();
 
-		if ( preg_match( '@' . Token::REGEX_T_VAR . '@', substr( $this->input, $this->cursor ), $matches ) )
-		{
-			$variableName = $matches[ 0 ];
-			$this->stream->addToken( new Token( $variableType, $variableName ) );
-			$this->advanceCursor( strlen( $variableName ) );
-			$this->setMode( self::MODE_INSIDE_TAG );
-
+		if (preg_match('@'.Token::REGEX_T_VAR.'@', substr($this->input, $this->cursor), $matches)) {
+			$variableName = $matches[0];
+			$this->stream->addToken(new Token($variableType, $variableName));
+			$this->advanceCursor(strlen($variableName));
+			$this->setMode(self::MODE_INSIDE_TAG);
 			return;
 		}
 	}
 
 	private function lexNumber()
 	{
-		if ( !preg_match( '@' . Token::REGEX_T_NUMBER . '@', $this->currentChar ) )
-		{
-			$this->stream->addToken( new Token( Token::T_NUMBER, $this->currentValue ) );
+		if (!preg_match('@'.Token::REGEX_T_NUMBER.'@', $this->currentChar)) {
+			$this->stream->addToken(new Token(Token::T_NUMBER, $this->currentValue));
 			$this->currentValue = '';
-			$this->setMode( self::MODE_INSIDE_TAG );
-
+			$this->setMode(self::MODE_INSIDE_TAG);
 			return;
 		}
 
@@ -233,13 +205,11 @@ class Lexer
 	private function lexString()
 	{
 		// until found same as startChar
-		if( $this->currentChar === $this->modeStartChar )
-		{
+		if ($this->currentChar === $this->modeStartChar) {
 			$this->advanceCursor();
-			$this->stream->addToken( new Token( Token::T_STRING, $this->currentValue ) );
+			$this->stream->addToken(new Token(Token::T_STRING, $this->currentValue));
 			$this->currentValue = '';
-			$this->setMode( self::MODE_INSIDE_TAG );
-
+			$this->setMode(self::MODE_INSIDE_TAG);
 			return;
 		}
 
@@ -249,21 +219,21 @@ class Lexer
 
 	private function getNextChar()
 	{
-		return $this->input[ $this->cursor + 1 ];
+		return $this->input[$this->cursor+1];
 	}
 
-	private function setCursor( $n )
+	private function setCursor($n)
 	{
 		$this->cursor = $n;
 	}
 
-	private function setMode( $mode )
+	private function setMode($mode)
 	{
 		$this->mode = $mode;
 	}
 
-	private function advanceCursor( $n = 1 )
+	private function advanceCursor($n = 1)
 	{
-		$this->setCursor( $this->cursor + $n );
+		$this->setCursor($this->cursor+$n);
 	}
 }

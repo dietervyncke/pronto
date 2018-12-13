@@ -58,6 +58,7 @@ class LexerTest extends TestCase
 	public function testTokenValueTypes()
 	{
 		$this->tokenTypesShouldMatch('', []);
+		$this->tokenTypesShouldMatch(' ', [Token::T_TEXT]);
 		$this->tokenTypesShouldMatch('{{', [Token::T_OPENING_TAG]);
 		$this->tokenTypesShouldMatch('{{}}', [Token::T_OPENING_TAG, Token::T_CLOSING_TAG]);
 		$this->tokenTypesShouldMatch('{{}}', [Token::T_OPENING_TAG, Token::T_CLOSING_TAG]);
