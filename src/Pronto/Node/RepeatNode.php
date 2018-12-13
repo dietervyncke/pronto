@@ -3,6 +3,7 @@
 namespace Pronto\Node;
 
 use Pronto\Compiler;
+use Pronto\Exception\SyntaxError;
 use Pronto\Parser;
 use Pronto\Token;
 
@@ -18,10 +19,11 @@ class RepeatNode extends Node
 
 			if( $parser->skip( Token::T_SYMBOL, '(' ) )
 			{
-				if( ExpressionNode::parse( $parser ) )
-				{
-					$parser->setAttribute();
+				if( !ExpressionNode::parse( $parser ) ) {
+					throw new SyntaxError('Expected expression');
 				}
+
+				$parser->setAttribute();
 			}
 
 			$parser->skip( Token::T_SYMBOL, ')' );

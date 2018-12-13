@@ -17,8 +17,7 @@ class TextNode extends Node
 
 	public static function parse(Parser $parser)
 	{
-		if($parser->accept(Token::T_TEXT))
-		{
+		if ($parser->accept(Token::T_TEXT)) {
 			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
@@ -30,6 +29,6 @@ class TextNode extends Node
 
 	public function compile(Compiler $compiler)
 	{
-		$compiler->writeBody('<?php $env->write(\'' . str_replace('\'', '\\\'', $this->text) . '\'); ?>');
+		$compiler->writeBody('<?php $env->write(\''.str_replace('\'', '\\\'', $this->text).'\'); ?>');
 	}
 }
