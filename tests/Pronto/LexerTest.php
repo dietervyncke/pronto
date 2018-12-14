@@ -2,6 +2,7 @@
 
 namespace Tests\Pronto;
 
+use Pronto\Exception\LexError;
 use Pronto\Lexer;
 use Pronto\Token;
 use Pronto\TokenStream;

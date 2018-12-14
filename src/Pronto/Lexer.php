@@ -2,6 +2,8 @@
 
 namespace Pronto;
 
+use Pronto\Exception\LexError;
+
 class Lexer
 {
 	private $mode;
@@ -87,8 +89,8 @@ class Lexer
 	private function lexAll()
 	{
 		// only text is found as input
-		if ($this->cursor + 1 === $this->end)
-		{
+		if ($this->cursor + 1 === $this->end) {
+
 			$this->stream->addToken(new Token(Token::T_TEXT, $this->currentValue.$this->currentChar));
 			$this->advanceCursor(); // escape while-loop
 			return;
@@ -160,6 +162,9 @@ class Lexer
 
 		} elseif (preg_match('@'.Token::REGEX_T_SYMBOL.'@', $this->currentChar)) {
 			$this->stream->addToken(new Token(Token::T_SYMBOL, $this->currentChar));
+
+		} elseif ($this->currentChar !== ' ') {
+			$this->stream->addToken(new Token(Token::T_UNKNOWN, $this->currentChar));
 		}
 
 		$this->advanceCursor();

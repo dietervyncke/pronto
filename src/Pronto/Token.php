@@ -33,6 +33,7 @@ class Token
 	const T_NUMBER = 'T_NUMBER';
 	const T_SYMBOL = 'T_SYMBOL';
 	const T_OP = 'T_OP';
+	const T_UNKNOWN = 'T_UNKNOWN';
 
 	private static $tokentypes = [
 		self::T_TEXT => 'T_TEXT',
@@ -45,6 +46,7 @@ class Token
 		self::T_NUMBER => 'T_NUMBER',
 		self::T_SYMBOL => 'T_SYMBOL',
 		self::T_OP => 'T_OP',
+		self::T_UNKNOWN => 'T_UNKNOWN',
 	];
 
 	public function __construct( $type, $value )
