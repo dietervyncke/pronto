@@ -10,11 +10,13 @@ class ExpressionNode extends Node
 {
 	public static function parse(Parser $parser, $strict = false)
 	{
-		if (GlobalVariableNode::parse($parser) ||
+		if (
+			GlobalVariableNode::parse($parser) ||
+			LocalVariableNode::parse($parser) ||
 			StringNode::parse($parser) ||
 			NumberNode::parse($parser) ||
-			LocalVariableNode::parse($parser))
-		{
+			ConstantNode::parse($parser)
+		) {
 			if (!$parser->getScopeNode() instanceof self) {
 				$parser->wrap(new static());
 			}

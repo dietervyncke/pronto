@@ -44,6 +44,7 @@ class IfNodeTest extends TestCase
 		$this->checkIfCompilerGivesExactResult('{{ if 5 }}5{{ /if }}', '<?php if(5): ?><?php $env->write(\'5\'); ?><?php endif; ?>');
 		$this->checkIfCompilerGivesExactResult('{{ if 10 +80 }}{{ /if }}', '<?php if(10+80): ?><?php endif; ?>');
 		$this->checkIfCompilerGivesExactResult('{{ if "value" equals 5 }}{{ /if }}', '<?php if(\'value\'===5): ?><?php endif; ?>');
+		$this->checkIfCompilerGivesExactResult('{{ if FALSE }}{{ /if }}', '<?php if(false): ?><?php endif; ?>');
 	}
 
 	public function checkIfParserReturnsTrue($code)

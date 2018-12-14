@@ -16,6 +16,7 @@ class ExpressionNodeTest extends TestCase
 		$this->checkIfParserReturnsTrue('{{ "hi there" + 5 }}');
 		$this->checkIfParserReturnsTrue('{{ 5 - 3 }}');
 		$this->checkIfParserReturnsTrue('{{ ?-my_local_var }}');
+		$this->checkIfParserReturnsTrue('{{ ZERO + PI }}');
 	}
 
 	public function testParsingReturnsFalse()
@@ -37,6 +38,7 @@ class ExpressionNodeTest extends TestCase
 		$this->checkIfCompilerGivesExactResult('{{ ?-local_var }}', '$env->getLocalVariable(\'local_var\')');
 		$this->checkIfCompilerGivesExactResult('{{ "string" }}', '\'string\'');
 		$this->checkIfCompilerGivesExactResult('{{ 5 }}', '5');
+		$this->checkIfCompilerGivesExactResult('{{ ZERO }}', '0');
 		$this->checkIfCompilerGivesExactResult('{{ 5 - 3 }}', '5-3');
 		$this->checkIfCompilerGivesExactResult('{{ 5 +   "string" }}', '5+\'string\'');
 		$this->checkIfCompilerGivesExactResult('{{ ?=global_var + ?-my_local_var }}', '$env->getGlobalVariable(\'global_var\')+$env->getLocalVariable(\'my_local_var\')');
