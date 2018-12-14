@@ -11,20 +11,19 @@ class LogicalOperatorNodeTest extends TestCase
 {
 	public function testParsingReturnsTrue()
 	{
-		$this->checkIfParserReturnsTrue('{{ if equals }}');
-		$this->checkIfParserReturnsTrue('{{ if   equals }}');
+		$this->checkIfParserReturnsTrue('{{ equals }}');
 	}
 
 	public function testParsingReturnsFalse()
 	{
-		$this->checkIfParserReturnsFalse('{{ if eqals }}');
-		$this->checkIfParserReturnsFalse('{{ if "equals" }}');
-		$this->checkIfParserReturnsFalse('{{ if === }}');
+		$this->checkIfParserReturnsFalse('{{ eqals }}');
+		$this->checkIfParserReturnsFalse('{{ "equals" }}');
+		$this->checkIfParserReturnsFalse('{{ === }}');
 	}
 
 	public function testCompilingResults()
 	{
-		$this->checkIfCompilerGivesExactResult('{{ if equals }}', ' === ');
+		$this->checkIfCompilerGivesExactResult('{{ equals }}', '===');
 	}
 
 	private function checkIfParserReturnsTrue($code)
@@ -33,7 +32,6 @@ class LogicalOperatorNodeTest extends TestCase
 		$tokenStream = $lexer->tokenize($code);
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
-		$parser->skip(Token::T_IDENT);
 
 		$this->assertTrue(LogicalOperatorNode::parse($parser));
 	}
@@ -44,7 +42,6 @@ class LogicalOperatorNodeTest extends TestCase
 		$tokenStream = $lexer->tokenize($code);
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
-		$parser->skip(Token::T_IDENT);
 
 		$this->assertFalse(LogicalOperatorNode::parse($parser));
 	}
@@ -56,7 +53,6 @@ class LogicalOperatorNodeTest extends TestCase
 
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
-		$parser->skip(Token::T_IDENT);
 		LogicalOperatorNode::parse($parser);
 
 		$compiler = new Compiler();

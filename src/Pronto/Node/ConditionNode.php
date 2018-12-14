@@ -17,7 +17,6 @@ class ConditionNode extends Node
 
 			if (ExpressionNode::parse($parser) || LogicalOperatorNode::parse($parser)) {
 				self::parse($parser);
-
 			} else {
 				$parser->traverseDown();
 			}

@@ -11,7 +11,7 @@ class LogicalOperatorNode extends Node
 	public static function parse(Parser $parser)
 	{
 		if ($parser->accept(Token::T_IDENT, 'equals')) {
-			$parser->insert(new static( $parser->getCurrentToken()->getValue()));
+			$parser->insert(new static($parser->getCurrentToken()->getValue()));
 			$parser->advance();
 
 			return true;
@@ -22,6 +22,6 @@ class LogicalOperatorNode extends Node
 
 	public function compile(Compiler $compiler)
 	{
-		$compiler->writeBody(' === ');
+		$compiler->writeBody('===');
 	}
 }
