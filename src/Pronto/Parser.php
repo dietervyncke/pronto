@@ -87,7 +87,7 @@ class Parser
 		return false;
 	}
 
-	public function wrap( Node $node )
+	public function wrap(Node $node)
 	{
 		$last = $this->getScopeNode()->getLastChild();
 		$this->getScopeNode()->removeLastChild();

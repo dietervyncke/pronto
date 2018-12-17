@@ -5,38 +5,41 @@ namespace Tests\Pronto\Node;
 use PHPUnit\Framework\TestCase;
 use Pronto\Compiler;
 use Pronto\Exception\SyntaxError;
-use Pronto\Node\ParameterNode;
+use Pronto\Node\WriteFileNode;
 use Pronto\Token;
 
-class ParameterNodeTest extends TestCase
+class WriteFileNodeTest extends TestCase
 {
 	public function testParsingReturnsTrue()
 	{
-		$this->checkIfParserReturnsTrue('{{ 5, 10, 1 }}');
-		$this->checkIfParserReturnsTrue('{{ 10 }}');
-		$this->checkIfParserReturnsTrue('{{ "my string" }}');
-		$this->checkIfParserReturnsTrue('{{ "my string", 5, 10 }}');
-		$this->checkIfParserReturnsTrue('{{ 10, \'test\' }}');
-		$this->checkIfParserReturnsTrue('{{ 10 , 100, 0.75 }}');
+		$this->checkIfParserReturnsTrue('{{ writeFile "myfile" }}{{ /writeFile }}');
+		$this->checkIfParserReturnsTrue('{{ writeFile 85 }}{{ /writeFile }}');
 	}
 
 	public function testParsingReturnsFalse()
 	{
-		$this->checkIfParserReturnsFalse('{{ identifier }}');
-		$this->checkIfParserReturnsFalse('{{ /repeat }}');
-		$this->checkIfParserReturnsFalse('{{ if }}');
-		$this->checkIfParserReturnsFalse('{{ /if }}');
+		$this->checkIfParserReturnsFalse('{{ write }}{{ /write }}');
+		$this->checkIfParserReturnsFalse('{{ "writeFile" }}{{ /writeFile }}');
 	}
 
-	public function testParsingThrowsSyntaxErrorWhenValueIsNotExpression()
+	public function testParsingThrowsSyntaxErrorWhenMissingClosingTagStart()
 	{
-		$this->checkIfParserThrowsSyntaxError('{{ 10, identifier }}');
+		$this->checkIfParserThrowsSyntaxError('{{ writeFile {{ /writeFile }}');
+	}
+
+	public function testParsingThrowsSyntaxErrorWhenMissingClosingTagEnd()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ writeFile }}{{ /writeFile    ');
+	}
+
+	public function testParsingThrowsSyntaxErrorWhenClosingWithoutOpening()
+	{
+		$this->checkIfParserThrowsSyntaxError('{{ /writeFile }}');
 	}
 
 	public function testCompilingResults()
 	{
-		$this->checkIfCompilerGivesExactResult('{{ 10, 5 }}', '[10,5,]');
-		$this->checkIfCompilerGivesExactResult('{{ "string",0.75 , 50,1 }}', '[\'string\',0.75,50,1,]');
+		$this->checkIfCompilerGivesExactResult('{{ writeFile "string" }}my test file content{{ /writeFile }}', '<?php $env->writeFile(function() use (&$env) { ?><?php $env->write(\'my test file content\'); ?><?php },\'string\'); ?>');
 	}
 
 	public function checkIfParserReturnsTrue($code)
@@ -47,7 +50,7 @@ class ParameterNodeTest extends TestCase
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
 
-		$this->assertTrue(ParameterNode::parse($parser));
+		$this->assertTrue(WriteFileNode::parse($parser));
 	}
 
 	public function checkIfParserReturnsFalse($code)
@@ -58,7 +61,7 @@ class ParameterNodeTest extends TestCase
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
 
-		$this->assertFalse(ParameterNode::parse($parser));
+		$this->assertFalse(WriteFileNode::parse($parser));
 	}
 
 	public function checkIfParserThrowsSyntaxError($code)
@@ -70,7 +73,7 @@ class ParameterNodeTest extends TestCase
 		$parser->skip(Token::T_OPENING_TAG);
 
 		$this->expectException(SyntaxError::class);
-		ParameterNode::parse($parser);
+		WriteFileNode::parse($parser);
 	}
 
 	public function checkIfCompilerGivesExactResult($code, $compiled)
@@ -80,7 +83,7 @@ class ParameterNodeTest extends TestCase
 
 		$parser = new \Pronto\Parser($tokenStream);
 		$parser->skip(Token::T_OPENING_TAG);
-		ParameterNode::parse($parser);
+		WriteFileNode::parse($parser);
 
 		$compiler = new Compiler();
 

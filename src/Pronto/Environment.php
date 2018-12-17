@@ -11,6 +11,7 @@ class Environment
 {
 	private $cwd;
 	private $runPath;
+	private $writePath;
 
 	private $runtime;
 	private $buffer;
@@ -19,7 +20,7 @@ class Environment
 
 	private static $id = 0;
 
-	public function __construct(Runtime $runtime, BufferInterface $buffer, OutputInterface $output, InputInterface $input, $cwd, $runPath)
+	public function __construct(Runtime $runtime, BufferInterface $buffer, OutputInterface $output, InputInterface $input, $cwd, $runPath, $writePath)
 	{
 		$this->runtime = $runtime;
 		$this->buffer = $buffer;
@@ -28,6 +29,7 @@ class Environment
 
 		$this->cwd = $cwd;
 		$this->runPath = $runPath;
+		$this->writePath = $writePath;
 	}
 
 	public function getLocalVariable(string $name, array $options = []): string
@@ -81,7 +83,7 @@ class Environment
 
 	public function writeFile($closure, $filename)
 	{
-		$dir = dirname($this->cwd . '/' . $filename);
+		$dir = dirname($this->writePath . '/' . $filename);
 
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
@@ -91,7 +93,7 @@ class Environment
 		$this->buffer->clear();
 
 		call_user_func($closure);
-		file_put_contents($this->cwd . '/' . $filename, $this->buffer->read());
+		file_put_contents($this->writePath . '/' . $filename, $this->buffer->read());
 
 		$this->buffer->clear();
 		$this->buffer->write($output);
@@ -99,7 +101,7 @@ class Environment
 
 	public function includeTemplate($filename)
 	{
-		$filename =  $this->runPath . '/' . $filename;
+		$filename =  $this->runPath.'/'.$filename;
 
 		if (file_exists($filename)) {
 
@@ -110,12 +112,12 @@ class Environment
 			$ast = $parser->parse();
 
 			$compiler = new \Pronto\Compiler();
-			$compiled = $compiler->compile( $ast );
+			$compiled = $compiler->compile($ast);
 
 			// create a new runtime and pass it to the environment
 			$runtime = new \Pronto\Runtime();
 			$buffer = new DefaultBuffer();
-			$environment = new \Pronto\Environment($runtime, $buffer, $this->output, $this->input, $this->cwd, $this->runPath);
+			$environment = new \Pronto\Environment($runtime, $buffer, $this->output, $this->input, $this->cwd, $this->runPath, $this->writePath);
 
 			// execute the compiled code
 			$environment->execute($compiled);

@@ -15,6 +15,7 @@ class OperatorNodeTest extends TestCase
 		$this->checkIfParserReturnsTrue('{{ - }}');
 		$this->checkIfParserReturnsTrue('{{ / }}');
 		$this->checkIfParserReturnsTrue('{{ * }}');
+		$this->checkIfParserReturnsTrue('{{ . }}');
 		$this->checkIfParserReturnsTrue('{{ % }}');
 	}
 
@@ -34,6 +35,7 @@ class OperatorNodeTest extends TestCase
 		$this->checkIfCompilerIsCorrect('{{ - }}', '-');
 		$this->checkIfCompilerIsCorrect('{{ % }}', '%');
 		$this->checkIfCompilerIsCorrect('{{ * }}', '*');
+		$this->checkIfCompilerIsCorrect('{{ . }}', '.');
 		$this->checkIfCompilerIsCorrect('{{ / }}', '/');
 	}
 

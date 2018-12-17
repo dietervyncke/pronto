@@ -14,9 +14,9 @@ class NumberNodeTest extends TestCase
 		$this->checkIfParserReturnsTrue('{{ 10 }}');
 		$this->checkIfParserReturnsTrue('{{ 50.004 }}');
 		$this->checkIfParserReturnsTrue('{{ 0.4545 }}');
-		$this->checkIfParserReturnsTrue('{{ .75 }}');
+		$this->checkIfParserReturnsTrue('{{ 0.75 }}');
 		$this->checkIfParserReturnsTrue('{{ 4545454241224 }}');
-		$this->checkIfParserReturnsTrue('{{ .1 }}');
+		$this->checkIfParserReturnsTrue('{{ 0.1 }}');
 		$this->checkIfParserReturnsTrue('{{ 0 }}');
 	}
 
@@ -31,7 +31,7 @@ class NumberNodeTest extends TestCase
 	{
 		$this->checkIfCompilerIsCorrect('{{ 10 }}', '10');
 		$this->checkIfCompilerIsCorrect('{{ 1.00 }}', '1.00');
-		$this->checkIfCompilerIsCorrect('{{ .75 }}', '.75');
+		$this->checkIfCompilerIsCorrect('{{ 0.75 }}', '0.75');
 		$this->checkIfCompilerIsCorrect('{{ 5000.000 }}', '5000.000');
 	}
 
