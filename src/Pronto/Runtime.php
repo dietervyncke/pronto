@@ -14,7 +14,7 @@ class Runtime implements RuntimeInterface
 		$this->globalVars[$name] = $value;
 	}
 
-	public function getGlobalVariable(string $name): string
+	public function getGlobalVariable(string $name)
 	{
 		return $this->globalVars[$name];
 	}
@@ -34,7 +34,7 @@ class Runtime implements RuntimeInterface
 		$this->localVars[$name] = $value;
 	}
 
-	public function getLocalVariable(string $name): string
+	public function getLocalVariable(string $name)
 	{
 		return $this->localVars[$name];
 	}

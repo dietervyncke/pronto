@@ -32,7 +32,7 @@ class Environment
 		$this->writePath = $writePath;
 	}
 
-	public function getLocalVariable(string $name, array $options = []): string
+	public function getLocalVariable(string $name, array $options = [])
 	{
 		if ($this->runtime->hasLocalVariable($name)) {
 			return $this->runtime->getLocalVariable($name);
@@ -43,7 +43,7 @@ class Environment
 		return $value;
 	}
 
-	public function getGlobalVariable(string $name, array $options = []): string
+	public function getGlobalVariable(string $name, array $options = [])
 	{
 		if ($this->runtime->hasGlobalVariable($name)) {
 			return $this->runtime->getGlobalVariable($name);
@@ -51,6 +51,7 @@ class Environment
 
 		$value = (count($options) ? $this->input->select($name, $options) : $this->input->read($name));
 		$this->runtime->setGlobalVariable($name, $value);
+
 		return $value;
 	}
 

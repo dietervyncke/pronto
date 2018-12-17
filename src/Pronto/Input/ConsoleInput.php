@@ -28,7 +28,7 @@ class ConsoleInput implements InputInterface
 		$climate->bold($string);
 	}
 
-	public function select(string $string, array $values): string
+	public function select(string $string, array $values)
 	{
 		$climate = new CLImate();
 		$input = $climate->radio($string, $values);
