@@ -35,8 +35,9 @@ class RepeatNode extends Node
 			}
 
 			$parser->expect(Token::T_CLOSING_TAG);
-			$parser->traverseDown();
 			$parser->advance();
+			$parser->traverseDown();
+			$parser->restartParse();
 		}
 
 		return false;

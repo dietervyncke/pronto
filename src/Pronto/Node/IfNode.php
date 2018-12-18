@@ -37,6 +37,7 @@ class IfNode extends Node
 			}
 
 			$parser->expect(Token::T_CLOSING_TAG);
+			$parser->advance();
 			$parser->traverseDown();
 			$parser->restartParse();
 		}
