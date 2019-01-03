@@ -82,9 +82,9 @@ class Environment
 		}
 	}
 
-	public function writeFile($closure, $filename)
+	public function writeFile($closure, $filename) // @TODO refactor this to an injected dependency (Filesystem?)
 	{
-		$dir = dirname($this->writePath . '/' . $filename);
+		$dir = dirname($this->writePath.'/'.$filename);
 
 		if (!is_dir($dir)) {
 			mkdir($dir, 0777, true);
@@ -94,7 +94,45 @@ class Environment
 		$this->buffer->clear();
 
 		call_user_func($closure);
-		file_put_contents($this->writePath . '/' . $filename, $this->buffer->read());
+		file_put_contents($this->writePath.'/'.$filename, $this->buffer->read());
+
+		$this->buffer->clear();
+		$this->buffer->write($output);
+	}
+
+	public function appendFile($closure, $filename) // @TODO refactor this to an injected dependency (Filesystem?)
+	{
+		$dir = dirname($this->writePath.'/'.$filename);
+
+		if (!is_dir($dir)) {
+			mkdir($dir, 0777, true);
+		}
+
+		$output = $this->buffer->read();
+		$this->buffer->clear();
+
+		call_user_func($closure);
+		$contents = file_get_contents($this->writePath.'/'.$filename);
+		file_put_contents($this->writePath.'/'.$filename, $contents.$this->buffer->read());
+
+		$this->buffer->clear();
+		$this->buffer->write($output);
+	}
+
+	public function prependFile($closure, $filename) // @TODO refactor this to an injected dependency (Filesystem?)
+	{
+		$dir = dirname($this->writePath.'/'.$filename);
+
+		if (!is_dir($dir)) {
+			mkdir($dir, 0777, true);
+		}
+
+		$output = $this->buffer->read();
+		$this->buffer->clear();
+
+		call_user_func($closure);
+		$contents = file_get_contents($this->writePath.'/'.$filename);
+		file_put_contents($this->writePath.'/'.$filename, $this->buffer->read().$contents);
 
 		$this->buffer->clear();
 		$this->buffer->write($output);
@@ -116,9 +154,8 @@ class Environment
 			$compiled = $compiler->compile($ast);
 
 			// create a new runtime and pass it to the environment
-			$runtime = new \Pronto\Runtime();
 			$buffer = new DefaultBuffer();
-			$environment = new \Pronto\Environment($runtime, $buffer, $this->output, $this->input, $this->cwd, $this->runPath, $this->writePath);
+			$environment = new \Pronto\Environment($this->runtime, $buffer, $this->output, $this->input, $this->cwd, $this->runPath, $this->writePath);
 
 			// execute the compiled code
 			$environment->execute($compiled);

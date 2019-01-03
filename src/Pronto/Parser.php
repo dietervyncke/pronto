@@ -4,6 +4,7 @@ namespace Pronto;
 
 use Pronto\Exception\SyntaxError;
 use Pronto\Node\AssignmentNode;
+use Pronto\Node\FileNode;
 use Pronto\Node\IfNode;
 use Pronto\Node\IncludeNode;
 use Pronto\Node\Node;
@@ -41,6 +42,7 @@ class Parser
 			RepeatNode::parse($this);
 			IncludeNode::parse($this);
 			PrintNode::parse($this);
+			FileNode::parse($this);
 			WriteFileNode::parse($this);
 			IfNode::parse($this);
 		}
