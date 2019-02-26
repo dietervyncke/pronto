@@ -1,31 +1,28 @@
 <?php
 
-namespace Pronto\Exporter;
+namespace Pronto\Importer;
 
 use Pronto\Contract\ImporterInterface;
 use Pronto\Contract\RuntimeInterface;
 use Pronto\Contract\StorageInterface;
-use Pronto\Runtime;
 
 class JsonImporter implements ImporterInterface
 {
 	private $storage;
+	private $runtime;
 
-	public function __construct(StorageInterface $storage)
+	public function __construct(StorageInterface $storage, RuntimeInterface $runtime)
 	{
 		$this->storage = $storage;
+		$this->runtime = $runtime;
 	}
 
-	public function import(): RuntimeInterface
+	public function import()
 	{
 		$globalVars = json_decode($this->storage->get());
 
-		$runtime = new Runtime();
-
 		foreach ($globalVars as $name => $value) {
-			$runtime->setGlobalVariable($name, $value);
+			$this->runtime->setGlobalVariable($name, $value);
 		}
-
-		return $runtime;
 	}
 }

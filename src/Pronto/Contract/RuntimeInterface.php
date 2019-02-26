@@ -16,4 +16,6 @@ interface RuntimeInterface
 	public function clearLocalVariables(): void;
 
 	public function getGlobalVariables(): array;
+
+	public function onChange(callable $call);
 }
