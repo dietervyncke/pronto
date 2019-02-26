@@ -96,9 +96,9 @@ class Runtime implements RuntimeInterface
 
 	public function nextScopeIsCreated(): bool
 	{
-		$nextScopeId = $this->currentScopeId + 1;
+		$nextScopeId = (string) ($this->currentScopeId + 1);
 
-		return isset($this->currentState['global']['scopes'][(string) $nextScopeId]) && $this->currentState['global']['scopes'][(string) $nextScopeId] !== false;
+		return isset($this->currentState['global']['scopes'][$nextScopeId]) && $this->currentState['global']['scopes'][$nextScopeId] !== false;
 	}
 
 	public function onChange(callable $call)

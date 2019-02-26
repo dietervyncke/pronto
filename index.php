@@ -38,7 +38,7 @@ $ast = $parser->parse();
 $compiler = new \Pronto\Compiler();
 $code = $compiler->compile($ast);
 
-// execute the compiled code
+// create output and input
 $output = ($outputFile ? new \Pronto\Output\FileOutput($outputFile) : new \Pronto\Output\ConsoleOutput());
 $input = new \Pronto\Input\ConsoleInput();
 
@@ -46,11 +46,10 @@ $input = new \Pronto\Input\ConsoleInput();
 $runtime = new \Pronto\Runtime();
 
 if ($runtimeFile) {
+
 	$importer = new \Pronto\Importer\JsonImporter(new \Pronto\Storage\FileStorage($runtimeFile), $runtime);
 	$importer->import();
-}
 
-if ($runtimeFile) {
 	$exporter = new \Pronto\Exporter\JsonExporter(new \Pronto\Storage\FileStorage($runtimeFile), $runtime);
 	$runtime->onChange(function () use ($exporter) {
 		$exporter->export();

@@ -74,6 +74,7 @@ class Environment
 			$isScopeCreated = ($this->runtime->nextScopeIsCreated());
 
 			if ($this->runtime->nextScopeIsAllocated() && ! $isScopeCreated) {
+				$this->runtime->allocateScope();
 				break;
 			}
 
