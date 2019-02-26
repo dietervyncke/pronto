@@ -63,22 +63,4 @@ class RuntimeTest extends TestCase
 
 		$this->assertEquals('overwritten variable value', $this->runtime->getLocalVariable('variable name to overwrite'));
 	}
-
-	public function testClearLocalVariables()
-	{
-		$this->assertTrue($this->runtime->hasLocalVariable('variable name'));
-
-		$this->runtime->clearLocalVariables();
-
-		$this->assertFalse($this->runtime->hasLocalVariable('variable name'));
-	}
-
-	public function testClearGlobalVariables()
-	{
-		$this->assertTrue($this->runtime->hasGlobalVariable('variable name'));
-
-		$this->runtime->clearGlobalVariables();
-
-		$this->assertFalse($this->runtime->hasGlobalVariable('variable name'));
-	}
 }

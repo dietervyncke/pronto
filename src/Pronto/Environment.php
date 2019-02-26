@@ -71,14 +71,21 @@ class Environment
 
 		while (true) {
 
-			$this->runtime->clearLocalVariables();
+			$isScopeCreated = ($this->runtime->nextScopeIsCreated());
 
-			if (!$this->input->confirm($title)) {
-				$this->input->write('Exiting repeat');
+			if ($this->runtime->nextScopeIsAllocated() && ! $isScopeCreated) {
 				break;
 			}
 
-			call_user_func($closure);
+			$this->runtime->allocateScope();
+
+			if ($isScopeCreated || $this->input->confirm($title)) {
+				$this->runtime->createScope();
+				call_user_func($closure);
+			} else {
+				$this->input->write('Exiting repeat');
+				break;
+			}
 		}
 	}
 

@@ -19,7 +19,7 @@ class JsonExporter implements ExporterInterface
 
 	public function export(): void
 	{
-		$json = json_encode($this->runtime->getGlobalVariables(), true);
+		$json = json_encode($this->runtime->getState(), JSON_PRETTY_PRINT);
 
 		$this->storage->put($json);
 	}

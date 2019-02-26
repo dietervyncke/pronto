@@ -12,10 +12,16 @@ interface RuntimeInterface
 	public function getLocalVariable(string $name);
 	public function hasLocalVariable(string $name): bool;
 
-	public function clearGlobalVariables(): void;
-	public function clearLocalVariables(): void;
+	public function allocateScope(): void;
+	public function createScope(): void;
+
+	public function nextScopeIsAllocated(): bool;
+	public function nextScopeIsCreated(): bool;
 
 	public function getGlobalVariables(): array;
+
+	public function getState(): array;
+	public function setState(array $state): void;
 
 	public function onChange(callable $call);
 }

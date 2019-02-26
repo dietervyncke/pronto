@@ -7,12 +7,20 @@ use Pronto\Contract\RuntimeInterface;
 class Runtime implements RuntimeInterface
 {
 	private $onChange;
-	private $globalVars = [];
-	private $localVars = [];
+	private $currentState = [];
+	private $currentScopeId = 0;
+
+	public function __construct()
+	{
+		$this->currentState['global'] = [
+			'vars' => [],
+			'scopes' => [],
+		];
+	}
 
 	public function setGlobalVariable(string $name, $value): void
 	{
-		$this->globalVars[$name] = $value;
+		$this->currentState['global']['vars'][$name] = $value;
 
 		if ($this->onChange) {
 			call_user_func($this->onChange);
@@ -21,22 +29,22 @@ class Runtime implements RuntimeInterface
 
 	public function getGlobalVariable(string $name)
 	{
-		return $this->globalVars[$name];
+		return $this->currentState['global']['vars'][$name];
 	}
 
 	public function hasGlobalVariable(string $name): bool
 	{
-		return isset($this->globalVars[$name]);
+		return isset($this->currentState['global']['vars'][$name]);
 	}
 
 	public function getGlobalVariables(): array
 	{
-		return $this->globalVars;
+		return $this->currentState['global']['vars'];
 	}
 
 	public function setLocalVariable(string $name, $value): void
 	{
-		$this->localVars[$name] = $value;
+		$this->currentState['global']['scopes'][(string) $this->currentScopeId]['vars'][$name] = $value;
 
 		if ($this->onChange) {
 			call_user_func($this->onChange);
@@ -45,34 +53,66 @@ class Runtime implements RuntimeInterface
 
 	public function getLocalVariable(string $name)
 	{
-		return $this->localVars[$name];
+		return $this->currentState['global']['scopes'][(string) $this->currentScopeId]['vars'][$name];
 	}
 
 	public function hasLocalVariable(string $name): bool
 	{
-		return isset($this->localVars[$name]);
+		return isset($this->currentState['global']['scopes'][(string) $this->currentScopeId]['vars'][$name]);
 	}
 
-	public function clearGlobalVariables(): void
+	public function allocateScope(): void
 	{
-		$this->globalVars = [];
+		$this->currentScopeId++;
+
+		if (! isset($this->currentState['global']['scopes'][(string) $this->currentScopeId])) {
+			$this->currentState['global']['scopes'][(string) $this->currentScopeId] = false;
+		}
 
 		if ($this->onChange) {
 			call_user_func($this->onChange);
 		}
 	}
 
-	public function clearLocalVariables(): void
+	public function createScope(): void
 	{
-		$this->localVars = [];
+		if (! isset($this->currentState['global']['scopes'][(string) $this->currentScopeId])) {
+			$this->currentState['global']['scopes'][(string) $this->currentScopeId] = [
+				'vars' => [],
+			];
+		}
 
 		if ($this->onChange) {
 			call_user_func($this->onChange);
 		}
+	}
+
+	public function nextScopeIsAllocated(): bool
+	{
+		$nextScopeId = (string) ($this->currentScopeId + 1);
+
+		return isset($this->currentState['global']['scopes'][$nextScopeId]);
+	}
+
+	public function nextScopeIsCreated(): bool
+	{
+		$nextScopeId = $this->currentScopeId + 1;
+
+		return isset($this->currentState['global']['scopes'][(string) $nextScopeId]) && $this->currentState['global']['scopes'][(string) $nextScopeId] !== false;
 	}
 
 	public function onChange(callable $call)
 	{
 		$this->onChange = $call;
+	}
+
+	public function getState(): array
+	{
+		return $this->currentState;
+	}
+
+	public function setState(array $state): void
+	{
+		$this->currentState = $state;
 	}
 }

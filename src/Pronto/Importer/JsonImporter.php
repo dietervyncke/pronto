@@ -19,10 +19,10 @@ class JsonImporter implements ImporterInterface
 
 	public function import()
 	{
-		$globalVars = json_decode($this->storage->get());
+		$state = json_decode($this->storage->get(), true);
 
-		foreach ($globalVars as $name => $value) {
-			$this->runtime->setGlobalVariable($name, $value);
+		if ($state !== null) {
+			$this->runtime->setState($state);
 		}
 	}
 }
